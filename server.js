@@ -1,41 +1,47 @@
 const express = require('express');
-const Database = require('better-sqlite3');
+const { Pool } = require('pg');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Database setup
-const db = new Database(path.join(__dirname, 'bulk.db'));
-db.pragma('journal_mode = WAL');
-db.exec(`
-  CREATE TABLE IF NOT EXISTS weights (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT UNIQUE NOT NULL,
-    weight REAL NOT NULL,
-    created_at TEXT DEFAULT (datetime('now'))
-  )
-`);
-db.exec(`
-  CREATE TABLE IF NOT EXISTS ergtimes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT UNIQUE NOT NULL,
-    time_seconds REAL NOT NULL,
-    created_at TEXT DEFAULT (datetime('now'))
-  )
-`);
+// Database setup — uses Railway's DATABASE_URL in production, local PostgreSQL in dev
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+});
+
+async function initDB() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS weights (
+      id SERIAL PRIMARY KEY,
+      date TEXT UNIQUE NOT NULL,
+      weight REAL NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS ergtimes (
+      id SERIAL PRIMARY KEY,
+      date TEXT UNIQUE NOT NULL,
+      time_seconds REAL NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+  console.log('Database tables ready');
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ---- Weight API ----
 
-app.get('/api/weights', (req, res) => {
-  const rows = db.prepare('SELECT * FROM weights ORDER BY date ASC').all();
+app.get('/api/weights', async (req, res) => {
+  const { rows } = await pool.query('SELECT * FROM weights ORDER BY date ASC');
   res.json(rows);
 });
 
-app.post('/api/weights', (req, res) => {
+app.post('/api/weights', async (req, res) => {
   const { date, weight } = req.body;
   if (!date || weight == null) {
     return res.status(400).json({ error: 'Date and weight are required' });
@@ -44,16 +50,15 @@ app.post('/api/weights', (req, res) => {
   if (isNaN(w) || w <= 0 || w > 500) {
     return res.status(400).json({ error: 'Weight must be between 0 and 500 lbs' });
   }
-  const stmt = db.prepare(`
-    INSERT INTO weights (date, weight) VALUES (?, ?)
-    ON CONFLICT(date) DO UPDATE SET weight = excluded.weight
-  `);
-  stmt.run(date, w);
-  const row = db.prepare('SELECT * FROM weights WHERE date = ?').get(date);
-  res.json(row);
+  const { rows } = await pool.query(`
+    INSERT INTO weights (date, weight) VALUES ($1, $2)
+    ON CONFLICT(date) DO UPDATE SET weight = EXCLUDED.weight
+    RETURNING *
+  `, [date, w]);
+  res.json(rows[0]);
 });
 
-app.put('/api/weights/:id', (req, res) => {
+app.put('/api/weights/:id', async (req, res) => {
   const { weight } = req.body;
   const { id } = req.params;
   if (weight == null) {
@@ -63,18 +68,17 @@ app.put('/api/weights/:id', (req, res) => {
   if (isNaN(w) || w <= 0 || w > 500) {
     return res.status(400).json({ error: 'Weight must be between 0 and 500 lbs' });
   }
-  const result = db.prepare('UPDATE weights SET weight = ? WHERE id = ?').run(w, id);
-  if (result.changes === 0) {
+  const { rows } = await pool.query('UPDATE weights SET weight = $1 WHERE id = $2 RETURNING *', [w, id]);
+  if (rows.length === 0) {
     return res.status(404).json({ error: 'Entry not found' });
   }
-  const row = db.prepare('SELECT * FROM weights WHERE id = ?').get(id);
-  res.json(row);
+  res.json(rows[0]);
 });
 
-app.delete('/api/weights/:id', (req, res) => {
+app.delete('/api/weights/:id', async (req, res) => {
   const { id } = req.params;
-  const result = db.prepare('DELETE FROM weights WHERE id = ?').run(id);
-  if (result.changes === 0) {
+  const { rowCount } = await pool.query('DELETE FROM weights WHERE id = $1', [id]);
+  if (rowCount === 0) {
     return res.status(404).json({ error: 'Entry not found' });
   }
   res.json({ success: true });
@@ -82,12 +86,12 @@ app.delete('/api/weights/:id', (req, res) => {
 
 // ---- 2K Erg Time API ----
 
-app.get('/api/ergtimes', (req, res) => {
-  const rows = db.prepare('SELECT * FROM ergtimes ORDER BY date ASC').all();
+app.get('/api/ergtimes', async (req, res) => {
+  const { rows } = await pool.query('SELECT * FROM ergtimes ORDER BY date ASC');
   res.json(rows);
 });
 
-app.post('/api/ergtimes', (req, res) => {
+app.post('/api/ergtimes', async (req, res) => {
   const { date, time_seconds } = req.body;
   if (!date || time_seconds == null) {
     return res.status(400).json({ error: 'Date and time are required' });
@@ -96,16 +100,15 @@ app.post('/api/ergtimes', (req, res) => {
   if (isNaN(t) || t <= 0 || t > 3600) {
     return res.status(400).json({ error: 'Time must be between 0 and 60 minutes' });
   }
-  const stmt = db.prepare(`
-    INSERT INTO ergtimes (date, time_seconds) VALUES (?, ?)
-    ON CONFLICT(date) DO UPDATE SET time_seconds = excluded.time_seconds
-  `);
-  stmt.run(date, t);
-  const row = db.prepare('SELECT * FROM ergtimes WHERE date = ?').get(date);
-  res.json(row);
+  const { rows } = await pool.query(`
+    INSERT INTO ergtimes (date, time_seconds) VALUES ($1, $2)
+    ON CONFLICT(date) DO UPDATE SET time_seconds = EXCLUDED.time_seconds
+    RETURNING *
+  `, [date, t]);
+  res.json(rows[0]);
 });
 
-app.put('/api/ergtimes/:id', (req, res) => {
+app.put('/api/ergtimes/:id', async (req, res) => {
   const { time_seconds } = req.body;
   const { id } = req.params;
   if (time_seconds == null) {
@@ -115,23 +118,28 @@ app.put('/api/ergtimes/:id', (req, res) => {
   if (isNaN(t) || t <= 0 || t > 3600) {
     return res.status(400).json({ error: 'Time must be between 0 and 60 minutes' });
   }
-  const result = db.prepare('UPDATE ergtimes SET time_seconds = ? WHERE id = ?').run(t, id);
-  if (result.changes === 0) {
+  const { rows } = await pool.query('UPDATE ergtimes SET time_seconds = $1 WHERE id = $2 RETURNING *', [t, id]);
+  if (rows.length === 0) {
     return res.status(404).json({ error: 'Entry not found' });
   }
-  const row = db.prepare('SELECT * FROM ergtimes WHERE id = ?').get(id);
-  res.json(row);
+  res.json(rows[0]);
 });
 
-app.delete('/api/ergtimes/:id', (req, res) => {
+app.delete('/api/ergtimes/:id', async (req, res) => {
   const { id } = req.params;
-  const result = db.prepare('DELETE FROM ergtimes WHERE id = ?').run(id);
-  if (result.changes === 0) {
+  const { rowCount } = await pool.query('DELETE FROM ergtimes WHERE id = $1', [id]);
+  if (rowCount === 0) {
     return res.status(404).json({ error: 'Entry not found' });
   }
   res.json({ success: true });
 });
 
-app.listen(PORT, () => {
-  console.log(`Bulk is running at http://localhost:${PORT}`);
+// Start server
+initDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Project2k is running on port ${PORT}`);
+  });
+}).catch(err => {
+  console.error('Failed to initialize database:', err);
+  process.exit(1);
 });
