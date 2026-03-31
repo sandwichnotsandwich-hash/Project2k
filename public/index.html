@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project2k — Built for Rowers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wtp-badge" id="wtp-badge" title="Weight-to-Power Ratio">
+    <span class="wtp-label">W/KG</span>
+    <span class="wtp-value" id="wtp-value">—</span>
+  </div>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="hero-tag">Rowing Performance Tracker</p>
+      <h1 class="hero-title">Project2k</h1>
+      <p class="hero-subtitle">Every stroke starts with the body you build.</p>
+      <div class="hero-stats" id="hero-stats"></div>
+    </div>
+    <div class="hero-fade"></div>
+  </header>
+
+  <!-- Tab Navigation -->
+  <nav class="tab-nav">
+    <div class="tab-nav-inner">
+      <button class="tab-btn active" data-tab="weight">
+        <span class="tab-icon">&#9878;</span>
+        Weight
+      </button>
+      <button class="tab-btn" data-tab="erg">
+        <span class="tab-icon">&#9201;</span>
+        2K Erg
+      </button>
+      <div class="tab-indicator"></div>
+    </div>
+  </nav>
+
+  <!-- ==================== WEIGHT TAB ==================== -->
+  <main class="container tab-content active" id="tab-weight">
+    <section class="card entry-card">
+      <div class="card-header">
+        <h2>Log Weight</h2>
+        <span class="card-badge">Daily</span>
+      </div>
+      <form id="weight-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date-input">Date</label>
+            <input type="date" id="date-input" required>
+          </div>
+          <div class="form-group">
+            <label for="weight-input">Weight (lbs)</label>
+            <input type="number" id="weight-input" step="0.1" min="50" max="400" placeholder="185.0" required>
+          </div>
+        </div>
+        <button type="submit" id="submit-btn">
+          <span>Log Weight</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+      <p id="form-message" class="form-message"></p>
+    </section>
+
+    <section class="card goal-card" id="weight-goal-card">
+      <div class="card-header">
+        <h2>Weight Target</h2>
+        <button type="button" class="goal-toggle-btn" id="goal-toggle-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+      <div class="goal-form" id="goal-form" style="display:none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="goal-weight">Target Weight (lbs)</label>
+            <input type="number" id="goal-weight" step="0.1" min="50" max="500" placeholder="200">
+          </div>
+          <div class="form-group">
+            <label for="goal-date">Target Date</label>
+            <input type="date" id="goal-date">
+          </div>
+        </div>
+        <button type="button" class="goal-save-btn" id="goal-save-btn">Set Target</button>
+      </div>
+      <div class="goal-display" id="goal-display" style="display:none;">
+        <div class="goal-stats">
+          <div class="goal-stat">
+            <span class="goal-stat-value" id="goal-current-weight">—</span>
+            <span class="goal-stat-label">Current</span>
+          </div>
+          <div class="goal-stat-arrow">→</div>
+          <div class="goal-stat">
+            <span class="goal-stat-value" id="goal-target-weight">—</span>
+            <span class="goal-stat-label">Target</span>
+          </div>
+          <div class="goal-stat-divider"></div>
+          <div class="goal-stat">
+            <span class="goal-stat-value accent" id="goal-per-week">—</span>
+            <span class="goal-stat-label">lbs/week needed</span>
+          </div>
+        </div>
+        <p class="goal-detail" id="goal-detail"></p>
+      </div>
+      <p class="goal-empty" id="goal-empty">Set a target weight and date to see your weekly plan.</p>
+    </section>
+
+    <section class="card chart-card">
+      <div class="card-header">
+        <h2>Progress</h2>
+      </div>
+      <div class="timeline-toggle" id="weight-timeline">
+        <button type="button" class="tl-btn" data-range="7">1W</button>
+        <button type="button" class="tl-btn" data-range="30">1M</button>
+        <button type="button" class="tl-btn" data-range="90">3M</button>
+        <button type="button" class="tl-btn" data-range="180">6M</button>
+        <button type="button" class="tl-btn" data-range="365">1Y</button>
+        <button type="button" class="tl-btn active" data-range="all">All</button>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="weight-chart"></canvas>
+      </div>
+      <p class="chart-empty" id="chart-empty">Log your first weigh-in to see your progress chart.</p>
+    </section>
+
+    <section class="card table-card">
+      <div class="card-header">
+        <h2>History</h2>
+      </div>
+      <div class="table-wrapper">
+        <table id="weight-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Weight (lbs)</th>
+              <th>Change</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <p class="table-empty" id="table-empty">No entries yet. Start tracking to see your history.</p>
+    </section>
+  </main>
+
+  <!-- ==================== 2K ERG TAB ==================== -->
+  <main class="container tab-content" id="tab-erg">
+    <section class="card entry-card">
+      <div class="card-header">
+        <h2>Log 2K Time</h2>
+        <span class="card-badge">Erg</span>
+      </div>
+      <form id="erg-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="erg-date-input">Date</label>
+            <input type="date" id="erg-date-input" required>
+          </div>
+          <div class="form-group">
+            <label for="erg-time-input" id="erg-input-label">2K Time (M:SS.s)</label>
+            <input type="text" id="erg-time-input" placeholder="0:00.0" maxlength="6" inputmode="numeric" required>
+          </div>
+        </div>
+        <div class="unit-toggle">
+          <button type="button" class="toggle-btn active" data-unit="split">500m Split</button>
+          <button type="button" class="toggle-btn" data-unit="watts">Watts</button>
+        </div>
+        <button type="submit" id="erg-submit-btn">
+          <span>Log Time</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+      <p id="erg-form-message" class="form-message"></p>
+    </section>
+
+    <section class="card chart-card">
+      <div class="card-header">
+        <h2>Progress</h2>
+        <div class="chart-toggle">
+          <button type="button" class="toggle-btn active" data-chart-unit="split">Split</button>
+          <button type="button" class="toggle-btn" data-chart-unit="watts">Watts</button>
+        </div>
+      </div>
+      <div class="timeline-toggle" id="erg-timeline">
+        <button type="button" class="tl-btn" data-range="7">1W</button>
+        <button type="button" class="tl-btn" data-range="30">1M</button>
+        <button type="button" class="tl-btn" data-range="90">3M</button>
+        <button type="button" class="tl-btn" data-range="180">6M</button>
+        <button type="button" class="tl-btn" data-range="365">1Y</button>
+        <button type="button" class="tl-btn active" data-range="all">All</button>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="erg-chart"></canvas>
+      </div>
+      <p class="chart-empty" id="erg-chart-empty">Log your first 2K to see your progress.</p>
+    </section>
+
+    <section class="card table-card">
+      <div class="card-header">
+        <h2>History</h2>
+        <div class="chart-toggle">
+          <button type="button" class="toggle-btn active" data-table-unit="split">Split</button>
+          <button type="button" class="toggle-btn" data-table-unit="watts">Watts</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table id="erg-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>2K Time</th>
+              <th id="erg-metric-header">500m Split</th>
+              <th>Change</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="erg-table-body"></tbody>
+        </table>
+      </div>
+      <p class="table-empty" id="erg-table-empty">No entries yet.</p>
+    </section>
+  </main>
+
+  <!-- Weight Edit Modal -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+      <h3>Edit Entry</h3>
+      <form id="edit-form">
+        <input type="hidden" id="edit-id">
+        <div class="form-group">
+          <label>Date</label>
+          <p id="edit-date-display" class="edit-date"></p>
+        </div>
+        <div class="form-group">
+          <label for="edit-weight">Weight (lbs)</label>
+          <input type="number" id="edit-weight" step="0.1" min="50" max="400" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancel-edit">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+        <button type="button" class="btn-delete" id="delete-weight">Delete Entry</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Erg Edit Modal -->
+  <div class="modal-overlay" id="erg-edit-modal">
+    <div class="modal">
+      <h3>Edit 2K Entry</h3>
+      <form id="erg-edit-form">
+        <input type="hidden" id="erg-edit-id">
+        <div class="form-group">
+          <label>Date</label>
+          <p id="erg-edit-date-display" class="edit-date"></p>
+        </div>
+        <div class="form-group">
+          <label for="erg-edit-time">2K Time (M:SS.s)</label>
+          <input type="text" id="erg-edit-time" placeholder="6:30.0" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="erg-cancel-edit">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+        <button type="button" class="btn-delete" id="delete-erg">Delete Entry</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <p class="footer-brand">Project2k</p>
+      <p>Every pound is a weapon on the water.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
