@@ -1034,6 +1034,7 @@ footer p:last-child {
   }
 
   .theme-toggle {
+    position: absolute;
     top: 50px;
     left: 12px;
     width: 40px;
