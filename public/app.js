@@ -1,3 +1,97 @@
+// ===================== AUTH =====================
+
+const AUTH_TOKEN_KEY = 'project2k_token';
+const AUTH_USER_KEY = 'project2k_user';
+
+function getToken() { return localStorage.getItem(AUTH_TOKEN_KEY); }
+function getUser() { const u = localStorage.getItem(AUTH_USER_KEY); return u ? JSON.parse(u) : null; }
+function setAuth(token, user) { localStorage.setItem(AUTH_TOKEN_KEY, token); localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user)); }
+function clearAuth() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); }
+function isLoggedIn() { return !!getToken(); }
+
+async function authFetch(url, options = {}) {
+  const token = getToken();
+  if (!token) { showLogin(); throw new Error('Not authenticated'); }
+  options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+  const res = await fetch(url, options);
+  if (res.status === 401) { showLogin(); throw new Error('Session expired'); }
+  return res;
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-wrapper').style.display = 'block';
+  const user = getUser();
+  if (user) {
+    document.getElementById('user-name').textContent = user.name || user.email;
+    const avatar = document.getElementById('user-avatar');
+    if (user.picture) { avatar.src = user.picture; avatar.style.display = 'block'; }
+    else { avatar.style.display = 'none'; }
+  }
+}
+
+function showLogin() {
+  clearAuth();
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-wrapper').style.display = 'none';
+}
+
+// Google Sign-In callback (must be global)
+window.handleGoogleSignIn = async function(response) {
+  try {
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential })
+    });
+    const data = await res.json();
+    if (data.token) {
+      setAuth(data.token, data.user);
+      showApp();
+      fetchWeights();
+      fetchErgTimes();
+    } else {
+      alert('Sign in failed. Please try again.');
+    }
+  } catch (err) {
+    console.error('Auth error:', err);
+    alert('Sign in failed. Please try again.');
+  }
+};
+
+// Sign out
+document.getElementById('signout-btn').addEventListener('click', () => {
+  showLogin();
+});
+
+// Initialize Google Sign-In button
+async function initGoogleSignIn() {
+  try {
+    const res = await fetch('/api/auth/config');
+    const { clientId } = await res.json();
+    if (!clientId) return;
+
+    // Wait for Google library to load
+    function tryInit() {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleSignIn
+        });
+        google.accounts.id.renderButton(
+          document.getElementById('google-signin-btn'),
+          { theme: 'filled_black', size: 'large', shape: 'rectangular', text: 'signin_with', width: 280 }
+        );
+      } else {
+        setTimeout(tryInit, 200);
+      }
+    }
+    tryInit();
+  } catch (err) {
+    console.error('Failed to init Google Sign-In:', err);
+  }
+}
+
 // ===================== THEME TOGGLE =====================
 
 const THEME_COLORS = {
@@ -292,7 +386,7 @@ const editWeightInput = document.getElementById('edit-weight');
 dateInput.value = todayStr();
 
 async function fetchWeights() {
-  weightEntries = await (await fetch('/api/weights')).json();
+  weightEntries = await (await authFetch('/api/weights')).json();
   renderWeightTable();
   renderWeightChart();
   updateHeroStats();
@@ -305,7 +399,7 @@ weightForm.addEventListener('submit', async (e) => {
   const weight = parseFloat(weightInput.value);
   if (!date || isNaN(weight)) return showMsg(weightMsg, 'Enter a valid date and weight.', 'error');
   try {
-    await fetch('/api/weights', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({date, weight}) });
+    await authFetch('/api/weights', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({date, weight}) });
     await fetchWeights();
     showMsg(weightMsg, 'Weight logged!', 'success');
     weightInput.value = '';
@@ -408,7 +502,7 @@ editModal.addEventListener('click', (e) => { if (e.target === editModal) editMod
 editForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = editIdInput.value, w = parseFloat(editWeightInput.value);
-  await fetch(`/api/weights/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({weight: w}) });
+  await authFetch(`/api/weights/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({weight: w}) });
   editModal.classList.remove('active');
   await fetchWeights();
   showMsg(weightMsg, 'Entry updated.', 'success');
@@ -417,7 +511,7 @@ editForm.addEventListener('submit', async (e) => {
 document.getElementById('delete-weight').addEventListener('click', async () => {
   const id = editIdInput.value;
   if (!confirm('Delete this weight entry?')) return;
-  await fetch(`/api/weights/${id}`, { method: 'DELETE' });
+  await authFetch(`/api/weights/${id}`, { method: 'DELETE' });
   editModal.classList.remove('active');
   await fetchWeights();
   showMsg(weightMsg, 'Entry deleted.', 'success');
@@ -571,7 +665,7 @@ document.querySelectorAll('.chart-toggle .toggle-btn[data-table-unit]').forEach(
 });
 
 async function fetchErgTimes() {
-  ergEntries = await (await fetch('/api/ergtimes')).json();
+  ergEntries = await (await authFetch('/api/ergtimes')).json();
   renderErgTable();
   renderErgChart();
   updateHeroStats();
@@ -589,7 +683,7 @@ ergForm.addEventListener('submit', async (e) => {
   }
   if (!date || isNaN(timeSec)) return showMsg(ergMsg, 'Enter a valid date and time/watts.', 'error');
   try {
-    await fetch('/api/ergtimes', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ date, time_seconds: timeSec }) });
+    await authFetch('/api/ergtimes', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ date, time_seconds: timeSec }) });
     await fetchErgTimes();
     showMsg(ergMsg, '2K logged!', 'success');
     ergTimeInput.value = '';
@@ -780,7 +874,7 @@ ergEditForm.addEventListener('submit', async (e) => {
   const id = ergEditId.value;
   const timeSec = parseTime(ergEditTime.value);
   if (isNaN(timeSec)) return showMsg(ergMsg, 'Enter time as M:SS.s', 'error');
-  await fetch(`/api/ergtimes/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ time_seconds: timeSec }) });
+  await authFetch(`/api/ergtimes/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ time_seconds: timeSec }) });
   ergEditModal.classList.remove('active');
   await fetchErgTimes();
   showMsg(ergMsg, 'Entry updated.', 'success');
@@ -789,7 +883,7 @@ ergEditForm.addEventListener('submit', async (e) => {
 document.getElementById('delete-erg').addEventListener('click', async () => {
   const id = ergEditId.value;
   if (!confirm('Delete this 2K entry?')) return;
-  await fetch(`/api/ergtimes/${id}`, { method: 'DELETE' });
+  await authFetch(`/api/ergtimes/${id}`, { method: 'DELETE' });
   ergEditModal.classList.remove('active');
   await fetchErgTimes();
   showMsg(ergMsg, 'Entry deleted.', 'success');
@@ -850,5 +944,12 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ===================== INIT =====================
-fetchWeights();
-fetchErgTimes();
+initGoogleSignIn();
+
+if (isLoggedIn()) {
+  showApp();
+  fetchWeights();
+  fetchErgTimes();
+} else {
+  showLogin();
+}

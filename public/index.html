@@ -8,9 +8,28 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body>
+  <!-- Login Screen -->
+  <div class="login-overlay" id="login-screen">
+    <div class="login-card">
+      <h1 class="login-title">Project2k</h1>
+      <p class="login-subtitle">Track your rowing progress</p>
+      <div id="google-signin-btn"></div>
+    </div>
+  </div>
+
+  <!-- App (hidden until authenticated) -->
+  <div id="app-wrapper" style="display:none;">
+  <div class="user-bar" id="user-bar">
+    <div class="user-info">
+      <img class="user-avatar" id="user-avatar" src="" alt="">
+      <span class="user-name" id="user-name"></span>
+    </div>
+    <button class="signout-btn" id="signout-btn">Sign Out</button>
+  </div>
   <button class="theme-toggle" id="theme-toggle" title="Switch theme">
     <span class="theme-dot" id="theme-dot"></span>
   </button>
@@ -279,6 +298,7 @@
       <p>Every pound is a weapon on the water.</p>
     </div>
   </footer>
+  </div><!-- end app-wrapper -->
 
   <script src="app.js"></script>
 </body>
