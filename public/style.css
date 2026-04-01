@@ -21,12 +21,11 @@
 }
 
 .login-title {
-  font-family: 'Black Ops One', 'Oswald', sans-serif;
-  font-size: 3.5rem;
-  color: #FF00C8;
-  letter-spacing: 0.06em;
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 4rem;
+  color: var(--text-primary, #f0e6ff);
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  text-shadow: 0 0 60px rgba(255, 0, 200, 0.3);
   margin-bottom: 12px;
 }
 
@@ -287,13 +286,12 @@ body {
 }
 
 .hero-title {
-  font-family: 'Black Ops One', var(--font-display);
-  font-size: clamp(4rem, 13vw, 8rem);
+  font-family: 'Bebas Neue', var(--font-display);
+  font-size: clamp(5rem, 16vw, 10rem);
   font-weight: 400;
-  letter-spacing: 0.06em;
-  line-height: 0.9;
-  color: var(--accent);
-  text-shadow: 0 0 60px rgba(255, 0, 200, 0.25), 0 0 120px rgba(255, 0, 200, 0.08);
+  letter-spacing: 0.15em;
+  line-height: 0.85;
+  color: var(--text-primary);
   text-transform: uppercase;
 }
 
@@ -1003,7 +1001,8 @@ footer p:last-child {
   }
 
   .hero-title {
-    font-size: 3rem !important;
+    font-size: 3.5rem !important;
+    letter-spacing: 0.12em;
   }
 
   .hero-tag {
