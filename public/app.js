@@ -1,16 +1,16 @@
 // ===================== SHARED UTILITIES =====================
 
 const COLORS = {
-  accent: '#B4FF00',
-  accentFade: 'rgba(180, 255, 0, 0.12)',
-  green: '#B4FF00',
+  accent: '#FF00C8',
+  accentFade: 'rgba(255, 0, 200, 0.12)',
+  green: '#FF00C8',
   red: '#ff4444',
-  grid: 'rgba(180, 255, 0, 0.04)',
-  border: 'rgba(180, 255, 0, 0.08)',
-  textMuted: '#5a7a62',
-  textLight: '#eef2f0',
-  cardBg: '#0B1A12',
-  tooltipBg: 'rgba(11, 26, 18, 0.95)',
+  grid: 'rgba(91, 0, 255, 0.06)',
+  border: 'rgba(91, 0, 255, 0.12)',
+  textMuted: '#8866aa',
+  textLight: '#f0e6ff',
+  cardBg: '#1a0a2e',
+  tooltipBg: 'rgba(26, 10, 46, 0.95)',
   fontMono: "'Inter', sans-serif",
 };
 
@@ -289,8 +289,8 @@ function renderWeightChart() {
 
   const ctx = document.getElementById('weight-chart').getContext('2d');
   const gradient = ctx.createLinearGradient(0, 0, 0, 320);
-  gradient.addColorStop(0, 'rgba(180, 255, 0, 0.15)');
-  gradient.addColorStop(1, 'rgba(180, 255, 0, 0)');
+  gradient.addColorStop(0, 'rgba(255, 0, 200, 0.15)');
+  gradient.addColorStop(1, 'rgba(255, 0, 200, 0)');
 
   weightChart = new Chart(ctx, {
     type: 'line',

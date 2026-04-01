@@ -5,20 +5,20 @@
 }
 
 :root {
-  --bg: #000000;
-  --bg-card: #0B1A12;
-  --bg-card-hover: #0f2318;
-  --text-primary: #eef2f0;
-  --text-secondary: #5a7a62;
-  --accent: #B4FF00;
-  --accent-glow: rgba(180, 255, 0, 0.12);
-  --accent-hover: #9de000;
-  --green: #B4FF00;
-  --green-glow: rgba(180, 255, 0, 0.12);
+  --bg: #0a0014;
+  --bg-card: #1a0a2e;
+  --bg-card-hover: #220d3a;
+  --text-primary: #f0e6ff;
+  --text-secondary: #8866aa;
+  --accent: #FF00C8;
+  --accent-glow: rgba(255, 0, 200, 0.15);
+  --accent-hover: #e000b0;
+  --green: #FF00C8;
+  --green-glow: rgba(255, 0, 200, 0.15);
   --red: #ff4444;
   --red-glow: rgba(255, 68, 68, 0.12);
-  --border: rgba(180, 255, 0, 0.08);
-  --border-hover: rgba(180, 255, 0, 0.18);
+  --border: rgba(91, 0, 255, 0.15);
+  --border-hover: rgba(91, 0, 255, 0.3);
   --radius: 14px;
   --radius-sm: 8px;
   --font-display: 'Oswald', sans-serif;
@@ -84,9 +84,9 @@ body {
   position: relative;
   padding: 80px 40px 64px;
   background:
-    radial-gradient(ellipse 80% 50% at 20% 80%, rgba(180, 255, 0, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(11, 26, 18, 0.6) 0%, transparent 50%),
-    linear-gradient(180deg, #0B1A12 0%, var(--bg) 100%);
+    radial-gradient(ellipse 80% 50% at 20% 80%, rgba(91, 0, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(255, 0, 200, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #12002a 0%, var(--bg) 100%);
   overflow: hidden;
 }
 
@@ -97,7 +97,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 25 30 30 Q45 35 60 30' fill='none' stroke='rgba(180,255,0,0.02)' stroke-width='1'/%3E%3C/svg%3E") repeat;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 25 30 30 Q45 35 60 30' fill='none' stroke='rgba(91,0,255,0.03)' stroke-width='1'/%3E%3C/svg%3E") repeat;
   animation: waveShift 20s linear infinite;
 }
 
@@ -130,7 +130,7 @@ body {
   letter-spacing: 0.06em;
   line-height: 0.9;
   color: var(--accent);
-  text-shadow: 0 0 60px rgba(180, 255, 0, 0.25), 0 0 120px rgba(180, 255, 0, 0.08);
+  text-shadow: 0 0 60px rgba(255, 0, 200, 0.25), 0 0 120px rgba(255, 0, 200, 0.08);
   text-transform: uppercase;
 }
 
@@ -178,7 +178,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(180, 255, 0, 0.15), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 0, 200, 0.15), transparent);
 }
 
 /* ===================== TABS ===================== */
@@ -332,7 +332,7 @@ body {
 .toggle-btn.active {
   background: var(--accent);
   color: #000;
-  box-shadow: 0 2px 8px rgba(180, 255, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 0, 200, 0.3);
 }
 
 .toggle-btn:hover:not(.active) {
@@ -367,7 +367,7 @@ body {
 .tl-btn.active {
   background: var(--accent);
   color: #000;
-  box-shadow: 0 2px 6px rgba(180, 255, 0, 0.25);
+  box-shadow: 0 2px 6px rgba(255, 0, 200, 0.25);
 }
 
 .tl-btn:hover:not(.active) {
@@ -413,7 +413,7 @@ input[type="text"] {
 
 input:focus {
   border-color: var(--accent);
-  background: rgba(180, 255, 0, 0.04);
+  background: rgba(255, 0, 200, 0.04);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
@@ -444,19 +444,19 @@ button[type="submit"],
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 16px rgba(180, 255, 0, 0.25);
+  box-shadow: 0 4px 16px rgba(255, 0, 200, 0.25);
 }
 
 button[type="submit"]:hover,
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(180, 255, 0, 0.35);
+  box-shadow: 0 6px 24px rgba(255, 0, 200, 0.35);
 }
 
 button[type="submit"]:active,
 .btn-primary:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(180, 255, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(255, 0, 200, 0.2);
 }
 
 .form-message {
@@ -568,7 +568,7 @@ button[type="submit"]:active,
 
 .goal-stat-value.accent {
   color: var(--accent);
-  text-shadow: 0 0 16px rgba(180, 255, 0, 0.3);
+  text-shadow: 0 0 16px rgba(255, 0, 200, 0.3);
 }
 
 .goal-stat-label {
@@ -645,7 +645,7 @@ tbody tr {
 }
 
 tbody tr:hover {
-  background: rgba(180, 255, 0, 0.03);
+  background: rgba(255, 0, 200, 0.03);
 }
 
 tbody tr:last-child {
@@ -678,7 +678,7 @@ tbody td:last-child {
 
 .pr-badge {
   display: inline-block;
-  background: linear-gradient(135deg, var(--green), #9de000);
+  background: linear-gradient(135deg, var(--green), #5B00FF);
   color: #000;
   font-size: 0.5625rem;
   font-weight: 700;
@@ -754,7 +754,7 @@ tbody td:last-child {
   padding: 36px;
   width: 90%;
   max-width: 420px;
-  box-shadow: var(--shadow), 0 0 60px rgba(180, 255, 0, 0.04);
+  box-shadow: var(--shadow), 0 0 60px rgba(255, 0, 200, 0.04);
   animation: modal-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
