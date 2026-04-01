@@ -234,8 +234,12 @@ body {
   background: var(--bg);
   color: var(--text-primary);
   min-height: 100vh;
+  min-height: 100dvh;
   line-height: 1.6;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* ===================== HERO ===================== */
@@ -995,34 +999,145 @@ footer p:last-child {
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 640px) {
   .hero {
-    padding: 56px 20px 48px;
+    padding: 32px 16px 24px;
+  }
+
+  .hero-title {
+    font-size: 3rem !important;
+  }
+
+  .hero-tag {
+    font-size: 0.65rem;
+    margin-bottom: 8px;
   }
 
   .hero-stats {
-    gap: 20px;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat-value {
+    font-size: 1.3rem;
+  }
+
+  .user-bar {
+    padding: 8px 16px;
+  }
+
+  .user-name {
+    font-size: 0.75rem;
+  }
+
+  .signout-btn {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+  }
+
+  .theme-toggle {
+    top: 50px;
+    left: 12px;
+    width: 40px;
+    height: 22px;
+  }
+
+  .theme-dot {
+    width: 14px;
+    height: 14px;
+  }
+
+  .theme-toggle.green .theme-dot {
+    transform: translateX(18px);
+  }
+
+  .wtp-badge {
+    top: 48px;
+    right: 12px;
+    padding: 6px 10px;
+    min-width: 50px;
+  }
+
+  .wtp-label {
+    font-size: 0.5rem;
+  }
+
+  .wtp-value {
+    font-size: 1rem;
+  }
+
+  .tab-nav {
+    padding: 4px 0;
   }
 
   .tab-nav-inner {
-    padding: 0 20px;
+    padding: 0 12px;
+    gap: 6px;
+  }
+
+  .tab-btn {
+    font-size: 0.85rem;
+    padding: 12px 16px;
+    letter-spacing: 0.1em;
   }
 
   .container {
-    padding: 16px 16px 48px;
-    gap: 16px;
+    padding: 12px 12px 40px;
+    gap: 12px;
   }
 
   .card {
-    padding: 20px;
+    padding: 18px 16px;
     border-radius: 12px;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
   }
 
   .form-row {
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
+  }
+
+  input[type="date"],
+  input[type="number"],
+  input[type="text"] {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  button[type="submit"],
+  .btn-primary {
+    padding: 14px 20px;
+    margin-top: 16px;
   }
 
   .chart-wrapper {
-    height: 240px;
+    height: 220px;
+  }
+
+  .timeline-toggle {
+    margin-bottom: 8px;
+  }
+
+  .tl-btn {
+    padding: 4px 9px;
+    font-size: 0.625rem;
+  }
+
+  .toggle-btn {
+    padding: 6px 12px;
+    font-size: 0.7rem;
+  }
+
+  thead th {
+    font-size: 0.6rem;
+    padding: 0 6px 10px;
+  }
+
+  tbody td {
+    padding: 10px 6px;
+    font-size: 0.8rem;
   }
 
   thead th:nth-child(3),
@@ -1035,11 +1150,42 @@ footer p:last-child {
     display: none;
   }
 
+  .btn-edit {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+
+  .goal-stats {
+    gap: 12px;
+  }
+
+  .goal-stat-value {
+    font-size: 1.2rem;
+  }
+
+  .goal-stat-arrow {
+    font-size: 1rem;
+  }
+
+  .modal {
+    padding: 24px;
+    width: 92%;
+  }
+
   .footer-inner {
     flex-direction: column;
     gap: 8px;
-    padding: 28px 20px;
+    padding: 24px 16px;
     text-align: center;
+  }
+
+  .login-title {
+    font-size: 2.5rem;
+  }
+
+  .login-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 28px;
   }
 }
 
