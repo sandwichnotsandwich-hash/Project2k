@@ -116,7 +116,7 @@
 /* ===================== THEME TOGGLE ===================== */
 .theme-toggle {
   position: fixed;
-  top: 16px;
+  top: 56px;
   left: 16px;
   z-index: 1000;
   width: 48px;
@@ -189,7 +189,7 @@ body.theme-green .tab-nav {
 /* ===================== W/KG BADGE ===================== */
 .wtp-badge {
   position: fixed;
-  top: 16px;
+  top: 56px;
   right: 16px;
   z-index: 1000;
   display: flex;
