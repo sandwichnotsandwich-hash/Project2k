@@ -27,6 +27,79 @@
   --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ===================== THEME TOGGLE ===================== */
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  width: 48px;
+  height: 26px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  cursor: pointer;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  transition: all var(--transition);
+}
+
+.theme-toggle:hover {
+  border-color: var(--border-hover);
+}
+
+.theme-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.theme-toggle.green .theme-dot {
+  transform: translateX(22px);
+}
+
+/* Green/Charcoal theme overrides */
+body.theme-green {
+  --bg: #000000;
+  --bg-card: #0B1A12;
+  --bg-card-hover: #0f2318;
+  --text-primary: #eef2f0;
+  --text-secondary: #5a7a62;
+  --accent: #B4FF00;
+  --accent-glow: rgba(180, 255, 0, 0.15);
+  --accent-hover: #9de000;
+  --green: #B4FF00;
+  --green-glow: rgba(180, 255, 0, 0.15);
+  --red: #ff4444;
+  --red-glow: rgba(255, 68, 68, 0.12);
+  --border: rgba(180, 255, 0, 0.08);
+  --border-hover: rgba(180, 255, 0, 0.18);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+body.theme-green .hero {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 80%, rgba(180, 255, 0, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(11, 26, 18, 0.6) 0%, transparent 50%),
+    linear-gradient(180deg, #0a1a0e 0%, #000000 100%);
+}
+
+body.theme-green .hero::before {
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 25 30 30 Q45 35 60 30' fill='none' stroke='rgba(180,255,0,0.02)' stroke-width='1'/%3E%3C/svg%3E") repeat;
+}
+
+body.theme-green .hero-fade {
+  background: linear-gradient(90deg, transparent, rgba(180, 255, 0, 0.15), transparent);
+}
+
+body.theme-green .tab-nav {
+  background: rgba(0, 0, 0, 0.85);
+}
+
 /* ===================== W/KG BADGE ===================== */
 .wtp-badge {
   position: fixed;
