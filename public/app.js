@@ -92,88 +92,20 @@ async function initGoogleSignIn() {
   }
 }
 
-// ===================== THEME TOGGLE =====================
-
-const THEME_COLORS = {
-  violet: {
-    accent: '#FF00C8',
-    accentFade: 'rgba(255, 0, 200, 0.12)',
-    green: '#FF00C8',
-    red: '#ff4444',
-    grid: 'rgba(91, 0, 255, 0.06)',
-    border: 'rgba(91, 0, 255, 0.12)',
-    textMuted: '#8866aa',
-    textLight: '#f0e6ff',
-    cardBg: '#1a0a2e',
-    tooltipBg: 'rgba(26, 10, 46, 0.95)',
-    gradientStart: 'rgba(255, 0, 200, 0.15)',
-    gradientEnd: 'rgba(255, 0, 200, 0)',
-  },
-  green: {
-    accent: '#B4FF00',
-    accentFade: 'rgba(180, 255, 0, 0.12)',
-    green: '#B4FF00',
-    red: '#ff4444',
-    grid: 'rgba(180, 255, 0, 0.04)',
-    border: 'rgba(180, 255, 0, 0.08)',
-    textMuted: '#5a7a62',
-    textLight: '#eef2f0',
-    cardBg: '#0B1A12',
-    tooltipBg: 'rgba(11, 26, 18, 0.95)',
-    gradientStart: 'rgba(180, 255, 0, 0.15)',
-    gradientEnd: 'rgba(180, 255, 0, 0)',
-  }
-};
-
-let currentTheme = localStorage.getItem('bulk_theme') || 'violet';
-
-function applyTheme(theme) {
-  currentTheme = theme;
-  localStorage.setItem('bulk_theme', theme);
-  const toggle = document.getElementById('theme-toggle');
-
-  if (theme === 'green') {
-    document.body.classList.add('theme-green');
-    toggle.classList.add('green');
-  } else {
-    document.body.classList.remove('theme-green');
-    toggle.classList.remove('green');
-  }
-
-  // Update chart colors
-  Object.assign(COLORS, THEME_COLORS[theme]);
-
-  // Rebuild charts with new colors
-  if (typeof weightChart !== 'undefined' && weightChart) { weightChart.destroy(); weightChart = null; }
-  if (typeof ergChart !== 'undefined' && ergChart) { ergChart.destroy(); ergChart = null; }
-  if (typeof renderWeightChart === 'function') renderWeightChart();
-  if (typeof renderErgChart === 'function') renderErgChart();
-}
-
-// Apply saved theme on load
-if (currentTheme === 'green') {
-  document.body.classList.add('theme-green');
-  document.getElementById('theme-toggle').classList.add('green');
-}
-
-document.getElementById('theme-toggle').addEventListener('click', () => {
-  applyTheme(currentTheme === 'violet' ? 'green' : 'violet');
-});
-
 // ===================== SHARED UTILITIES =====================
 
 const COLORS = {
-  accent: '#FF00C8',
-  accentFade: 'rgba(255, 0, 200, 0.12)',
-  green: '#FF00C8',
-  red: '#ff4444',
-  grid: 'rgba(91, 0, 255, 0.06)',
-  border: 'rgba(91, 0, 255, 0.12)',
-  textMuted: '#8866aa',
-  textLight: '#f0e6ff',
-  cardBg: '#1a0a2e',
-  tooltipBg: 'rgba(26, 10, 46, 0.95)',
-  fontMono: "'Inter', sans-serif",
+  accent: '#FF375F',
+  accentFade: 'rgba(255, 55, 95, 0.15)',
+  green: '#30D158',
+  red: '#FF375F',
+  grid: 'rgba(84, 84, 88, 0.18)',
+  border: 'rgba(84, 84, 88, 0.36)',
+  textMuted: '#8E8E93',
+  textLight: '#FFFFFF',
+  cardBg: '#1C1C1E',
+  tooltipBg: 'rgba(44, 44, 46, 0.95)',
+  fontMono: "-apple-system, 'Helvetica Neue', sans-serif",
 };
 
 function formatDate(dateStr) {
@@ -451,8 +383,8 @@ function renderWeightChart() {
 
   const ctx = document.getElementById('weight-chart').getContext('2d');
   const gradient = ctx.createLinearGradient(0, 0, 0, 320);
-  gradient.addColorStop(0, 'rgba(255, 0, 200, 0.15)');
-  gradient.addColorStop(1, 'rgba(255, 0, 200, 0)');
+  gradient.addColorStop(0, 'rgba(255, 55, 95, 0.2)');
+  gradient.addColorStop(1, 'rgba(255, 55, 95, 0)');
 
   weightChart = new Chart(ctx, {
     type: 'line',

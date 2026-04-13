@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a0014">
-  <title>Project2k — Built for Rowers</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#000000">
+  <title>Project2k</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -33,27 +30,23 @@
     </div>
     <button class="signout-btn" id="signout-btn">Sign Out</button>
   </div>
-  <button class="theme-toggle" id="theme-toggle" title="Switch theme">
-    <span class="theme-dot" id="theme-dot"></span>
-  </button>
-  <div class="wtp-badge" id="wtp-badge" title="Weight-to-Power Ratio">
-    <span class="wtp-label">W/KG</span>
-    <span class="wtp-value" id="wtp-value">—</span>
-  </div>
   <header class="hero">
-    <div class="hero-inner">
-      <h1 class="hero-title">Project2k</h1>
+    <div class="hero-inner" style="position:relative;">
+      <h1 class="hero-title">Summary</h1>
       <p class="hero-tag">Dial in your weight. Track your 2Ks. Crush your PR.</p>
+      <div class="wtp-badge" id="wtp-badge">
+        <span class="wtp-label">W/KG</span>
+        <span class="wtp-value" id="wtp-value">—</span>
+      </div>
       <div class="hero-stats" id="hero-stats"></div>
     </div>
-    <div class="hero-fade"></div>
   </header>
 
   <!-- Tab Navigation -->
   <nav class="tab-nav">
     <div class="tab-nav-inner">
-      <button class="tab-btn active" data-tab="weight">WEIGHT</button>
-      <button class="tab-btn" data-tab="erg">2K ERG</button>
+      <button class="tab-btn active" data-tab="weight">Weight</button>
+      <button class="tab-btn" data-tab="erg">2K Erg</button>
     </div>
   </nav>
 
