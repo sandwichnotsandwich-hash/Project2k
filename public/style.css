@@ -293,7 +293,7 @@ body {
   font-family: var(--font);
   font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #0A84FF;
   cursor: pointer;
   margin-top: auto;
 }
