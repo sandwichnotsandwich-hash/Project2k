@@ -147,7 +147,7 @@ body {
   font-family: var(--font-rounded);
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #0A84FF;
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
