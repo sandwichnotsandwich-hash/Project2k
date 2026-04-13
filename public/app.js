@@ -336,8 +336,8 @@ function renderWeightChart() {
       {
         label: '7-Day Average',
         data: sma,
-        borderColor: 'rgba(255, 255, 255, 0.25)',
-        borderWidth: 1.5,
+        borderColor: '#FF9F0A',
+        borderWidth: 2,
         borderDash: [6, 4],
         pointRadius: 0,
         fill: false,
