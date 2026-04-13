@@ -217,7 +217,11 @@ function updateHeroStats() {
   const goal2k = localStorage.getItem('bulk_goal_2k');
   if (goal2k) {
     const goalClass2k = ergEntries.length > 0 && Math.min(...ergEntries.map(e => e.time_seconds)) <= parseFloat(goal2k) ? 'goal-reached' : '';
-    parts.push(`<div class="hero-stat hero-stat-goal ${goalClass2k}" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value">${fmtTime(parseFloat(goal2k))}</span><span class="hero-stat-label">2K Goal</span></div>`);
+    const g2kSec = parseFloat(goal2k);
+    const g2kMin = Math.floor(g2kSec / 60);
+    const g2kS = Math.round(g2kSec % 60);
+    const g2kDisplay = `${g2kMin}:${g2kS < 10 ? '0' : ''}${g2kS}`;
+    parts.push(`<div class="hero-stat hero-stat-goal ${goalClass2k}" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value">${g2kDisplay}</span><span class="hero-stat-label">2K Goal</span></div>`);
   } else {
     parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">2K Goal</span></div>`);
   }
@@ -966,29 +970,36 @@ document.getElementById('goal-clear').addEventListener('click', () => {
 
 // ===================== 2K GOAL =====================
 
-// Auto-format 2K goal input as m:ss.s
+// Auto-format 2K goal input as M:SS
+function formatGoalDigits(d) {
+  if (d.length === 0) return '';
+  if (d.length === 1) return d;
+  if (d.length === 2) return d[0] + ':' + d[1];
+  return d[0] + ':' + d.slice(1, 3);
+}
+
 const goal2kInput = document.getElementById('goal-2k-input');
 goal2kInput.addEventListener('keydown', function(e) {
   if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
     if (e.key === 'Backspace') {
       e.preventDefault();
       const digits = this.value.replace(/[^0-9]/g, '');
-      this.value = formatTimeDigits(digits.slice(0, -1));
+      this.value = formatGoalDigits(digits.slice(0, -1));
     }
     return;
   }
   if (!/^\d$/.test(e.key)) { e.preventDefault(); return; }
   e.preventDefault();
   const digits = this.value.replace(/[^0-9]/g, '');
-  if (digits.length >= 4) return;
-  this.value = formatTimeDigits(digits + e.key);
+  if (digits.length >= 3) return;
+  this.value = formatGoalDigits(digits + e.key);
 });
 
 goal2kInput.addEventListener('paste', function(e) {
   e.preventDefault();
   const pasted = (e.clipboardData || window.clipboardData).getData('text');
-  const digits = pasted.replace(/[^0-9]/g, '').slice(0, 4);
-  this.value = formatTimeDigits(digits);
+  const digits = pasted.replace(/[^0-9]/g, '').slice(0, 3);
+  this.value = formatGoalDigits(digits);
 });
 
 document.getElementById('goal-2k-cancel').addEventListener('click', () => {
