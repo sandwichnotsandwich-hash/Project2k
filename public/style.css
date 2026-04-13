@@ -88,7 +88,7 @@ body {
 
 /* ===================== SUMMARY HEADER ===================== */
 .hero {
-  padding: 0 16px 16px;
+  padding: 16px 16px 16px;
   background: var(--bg);
   overflow: hidden;
 }
