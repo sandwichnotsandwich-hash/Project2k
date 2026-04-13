@@ -299,12 +299,10 @@ function renderWeightChart() {
   }
   const labels = filtered.map(e => shortDate(e.date));
   const weights = filtered.map(e => e.weight);
-  const sma = calculateSMA(weights);
 
   if (weightChart) {
     weightChart.data.labels = labels;
     weightChart.data.datasets[0].data = weights;
-    weightChart.data.datasets[1].data = sma;
     weightChart.update(); return;
   }
 
@@ -336,17 +334,6 @@ function renderWeightChart() {
             return curr >= prev ? '#30D158' : '#FF375F';
           }
         }
-      },
-      {
-        label: '7-Day Average',
-        data: sma,
-        borderColor: '#FF9F0A',
-        borderWidth: 2,
-        borderDash: [6, 4],
-        pointRadius: 0,
-        fill: false,
-        tension: 0,
-        spanGaps: false
       }
     ]},
     options: chartOptions('lbs')
