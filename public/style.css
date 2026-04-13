@@ -148,6 +148,10 @@ body {
   color: var(--text-primary);
 }
 
+.title-2k {
+  color: #0A84FF;
+}
+
 .hero-tag {
   font-size: 0.8125rem;
   font-weight: 400;
