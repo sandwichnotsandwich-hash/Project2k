@@ -548,12 +548,13 @@ function renderErgTable() {
   ergTableEmpty.style.display = 'none';
   const rev = [...ergEntries].reverse();
 
+  // Find the single overall best time
   let bestTime = Infinity;
-  const prSet = new Set();
+  let bestId = null;
   ergEntries.forEach(e => {
     if (e.time_seconds < bestTime) {
       bestTime = e.time_seconds;
-      prSet.add(e.id);
+      bestId = e.id;
     }
   });
 
@@ -562,7 +563,7 @@ function renderErgTable() {
     const split = toSplit(e.time_seconds);
     const watts = timeToWatts(e.time_seconds);
     const metricVal = ergTableUnit === 'watts' ? `${watts.toFixed(1)}` : fmtTime(split);
-    const isPR = prSet.has(e.id);
+    const isPR = e.id === bestId;
     const prBadge = isPR ? '<span class="pr-badge">PR</span>' : '';
 
     let ch = '<span class="change-neutral">\u2014</span>';
