@@ -1034,6 +1034,25 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// ===================== LAYOUT =====================
+function updateHeaderLayout() {
+  const hero = document.querySelector('.hero');
+  const tabNav = document.querySelector('.tab-nav');
+  if (!hero || !tabNav) return;
+  const heroH = hero.offsetHeight;
+  tabNav.style.top = heroH + 'px';
+  const tabH = tabNav.offsetHeight;
+  document.querySelectorAll('.container').forEach(c => {
+    c.style.paddingTop = (heroH + tabH + 12) + 'px';
+  });
+}
+
+window.addEventListener('resize', updateHeaderLayout);
+window.addEventListener('load', updateHeaderLayout);
+// Run after a short delay to ensure fonts are loaded
+setTimeout(updateHeaderLayout, 100);
+setTimeout(updateHeaderLayout, 500);
+
 // ===================== INIT =====================
 initGoogleSignIn();
 

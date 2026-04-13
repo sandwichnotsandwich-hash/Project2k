@@ -88,7 +88,12 @@ body {
 
 /* ===================== SUMMARY HEADER ===================== */
 .hero {
-  padding: 16px 16px 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  padding: 16px 16px 0;
   background: var(--bg);
   overflow: hidden;
 }
@@ -187,9 +192,9 @@ body {
 
 /* ===================== HAMBURGER MENU ===================== */
 .hamburger-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
+  position: fixed;
+  top: 16px;
+  right: 16px;
   z-index: 150;
   width: 36px;
   height: 36px;
@@ -300,13 +305,13 @@ body {
 
 /* ===================== TAB NAV ===================== */
 .tab-nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 10px 16px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 55;
+  background: var(--bg);
+  padding: 8px 16px 10px;
+  border-bottom: 1px solid var(--separator);
 }
 
 .tab-nav-inner {
