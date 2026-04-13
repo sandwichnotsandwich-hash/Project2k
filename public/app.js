@@ -795,15 +795,7 @@ function chartOptions(unit) {
     maintainAspectRatio: false,
     interaction: { mode: 'nearest', intersect: true },
     plugins: {
-      legend: {
-        position: 'top', align: 'start',
-        onClick: () => {},
-        labels: {
-          color: COLORS.textMuted,
-          font: { family: COLORS.fontMono, size: 12 },
-          usePointStyle: true, pointStyle: 'circle', padding: 16
-        }
-      },
+      legend: { display: false },
       tooltip: {
         backgroundColor: COLORS.tooltipBg,
         titleColor: COLORS.textLight,
