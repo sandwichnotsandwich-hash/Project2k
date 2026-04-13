@@ -265,10 +265,10 @@ body {
 }
 
 .tab-btn.active {
-  background: #30D158;
+  background: #0A84FF;
   color: #fff;
-  border-color: #30D158;
-  box-shadow: 0 2px 12px rgba(48, 209, 88, 0.3);
+  border-color: #0A84FF;
+  box-shadow: 0 2px 12px rgba(10, 132, 255, 0.3);
 }
 
 /* ===================== TAB CONTENT ===================== */
