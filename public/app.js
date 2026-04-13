@@ -191,46 +191,47 @@ function updateHeroStats() {
   const statsEl = document.getElementById('hero-stats');
   const parts = [];
 
-  // Current Weight
-  if (weightEntries.length > 0) {
-    const latest = weightEntries[weightEntries.length - 1];
-    parts.push(`<div class="hero-stat"><span class="hero-stat-value">${latest.weight.toFixed(1)}</span><span class="hero-stat-label">Current lbs</span></div>`);
-  }
+  // 1. Current Weight
+  const currentW = weightEntries.length > 0 ? weightEntries[weightEntries.length - 1].weight.toFixed(1) : '—';
+  parts.push(`<div class="hero-stat"><span class="hero-stat-value">${currentW}</span><span class="hero-stat-label">Current lbs</span></div>`);
 
-  // Weight Goal
+  // 2. Weight Goal
   const goalWeight = localStorage.getItem('bulk_goal_weight');
   if (goalWeight) {
     const goalClass = weightEntries.length > 0 && weightEntries[weightEntries.length - 1].weight >= parseFloat(goalWeight) ? 'goal-reached' : '';
     parts.push(`<div class="hero-stat hero-stat-goal ${goalClass}" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value">${parseFloat(goalWeight).toFixed(0)}</span><span class="hero-stat-label">Goal lbs</span></div>`);
   } else {
-    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value" class="goal-unset">Set</span><span class="hero-stat-label">Goal lbs</span></div>`);
+    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Goal lbs</span></div>`);
   }
 
-  // 2K PR
+  // 3. 2K PR
+  let best2k = '—';
   if (ergEntries.length > 0) {
     let best = Infinity;
     ergEntries.forEach(e => { if (e.time_seconds < best) best = e.time_seconds; });
-    parts.push(`<div class="hero-stat"><span class="hero-stat-value">${fmtTime(best)}</span><span class="hero-stat-label">2K PR</span></div>`);
+    best2k = fmtTime(best);
   }
+  parts.push(`<div class="hero-stat"><span class="hero-stat-value">${best2k}</span><span class="hero-stat-label">2K PR</span></div>`);
 
-  // 2K Goal
+  // 4. 2K Goal
   const goal2k = localStorage.getItem('bulk_goal_2k');
   if (goal2k) {
     const goalClass2k = ergEntries.length > 0 && Math.min(...ergEntries.map(e => e.time_seconds)) <= parseFloat(goal2k) ? 'goal-reached' : '';
     parts.push(`<div class="hero-stat hero-stat-goal ${goalClass2k}" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value">${fmtTime(parseFloat(goal2k))}</span><span class="hero-stat-label">2K Goal</span></div>`);
   } else {
-    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value" class="goal-unset">Set</span><span class="hero-stat-label">2K Goal</span></div>`);
+    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">2K Goal</span></div>`);
   }
 
-  // W/KG
+  // 5. W/KG
+  let wkgVal = '—';
   if (weightEntries.length > 0 && ergEntries.length > 0) {
     const latestWeight = weightEntries[weightEntries.length - 1].weight;
     const latestErg = ergEntries[ergEntries.length - 1].time_seconds;
     const weightKg = latestWeight * 0.453592;
     const watts = timeToWatts(latestErg);
-    const wkg = (watts / weightKg).toFixed(2);
-    parts.push(`<div class="hero-stat"><span class="hero-stat-value">${wkg}</span><span class="hero-stat-label">W/KG</span></div>`);
+    wkgVal = (watts / weightKg).toFixed(2);
   }
+  parts.push(`<div class="hero-stat"><span class="hero-stat-value">${wkgVal}</span><span class="hero-stat-label">W/KG</span></div>`);
 
   statsEl.innerHTML = parts.join('');
 }

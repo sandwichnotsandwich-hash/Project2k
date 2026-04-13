@@ -127,37 +127,44 @@ body {
 
 .hero-stats {
   display: flex;
-  gap: 24px;
+  gap: 12px;
   margin-top: 16px;
   flex-wrap: wrap;
+  align-items: stretch;
 }
 
 .hero-stat {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 2px;
+  padding: 6px 0;
+  min-width: 0;
 }
 
 .hero-stat-value {
   font-family: var(--font-rounded);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text-primary);
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .hero-stat-label {
-  font-size: 0.6875rem;
+  font-size: 0.5625rem;
   font-weight: 500;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .hero-stat-goal {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  border: 1.5px solid rgba(10, 132, 255, 0.5);
+  border: 1.5px solid rgba(10, 132, 255, 0.4);
   border-radius: 10px;
   padding: 6px 12px;
 }
@@ -167,7 +174,7 @@ body {
 }
 
 .hero-stat-goal.goal-reached {
-  border-color: rgba(48, 209, 88, 0.5);
+  border-color: rgba(48, 209, 88, 0.4);
 }
 
 .hero-stat-goal.goal-reached .hero-stat-value {
