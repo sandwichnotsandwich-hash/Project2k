@@ -966,6 +966,31 @@ document.getElementById('goal-clear').addEventListener('click', () => {
 
 // ===================== 2K GOAL =====================
 
+// Auto-format 2K goal input as m:ss.s
+const goal2kInput = document.getElementById('goal-2k-input');
+goal2kInput.addEventListener('keydown', function(e) {
+  if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      const digits = this.value.replace(/[^0-9]/g, '');
+      this.value = formatTimeDigits(digits.slice(0, -1));
+    }
+    return;
+  }
+  if (!/^\d$/.test(e.key)) { e.preventDefault(); return; }
+  e.preventDefault();
+  const digits = this.value.replace(/[^0-9]/g, '');
+  if (digits.length >= 4) return;
+  this.value = formatTimeDigits(digits + e.key);
+});
+
+goal2kInput.addEventListener('paste', function(e) {
+  e.preventDefault();
+  const pasted = (e.clipboardData || window.clipboardData).getData('text');
+  const digits = pasted.replace(/[^0-9]/g, '').slice(0, 4);
+  this.value = formatTimeDigits(digits);
+});
+
 document.getElementById('goal-2k-cancel').addEventListener('click', () => {
   document.getElementById('goal-2k-modal').classList.remove('active');
 });
