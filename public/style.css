@@ -66,19 +66,26 @@ body {
 
 .login-title {
   font-family: var(--font-rounded);
-  font-size: 2.5rem;
+  font-size: 4rem;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   text-transform: uppercase;
 }
 
 .login-subtitle {
-  font-size: 0.9375rem;
+  font-size: 1.25rem;
   color: var(--text-secondary);
-  margin-bottom: 32px;
+  margin-bottom: 48px;
   line-height: 1.5;
+}
+
+.login-cta {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 16px;
 }
 
 #google-signin-btn {
