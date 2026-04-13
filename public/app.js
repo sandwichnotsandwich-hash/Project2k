@@ -647,17 +647,20 @@ function renderErgChart() {
 
   if (ergChartUnit === 'watts') {
     values = filtered.map(e => +timeToWatts(e.time_seconds).toFixed(1));
+  } else if (ergChartUnit === 'time') {
+    values = filtered.map(e => +e.time_seconds.toFixed(1));
   } else {
     values = filtered.map(e => +toSplit(e.time_seconds).toFixed(1));
   }
 
+  const higherIsBetter = ergChartUnit === 'watts';
   const segmentColors = [];
-  let best = ergChartUnit === 'watts' ? -Infinity : Infinity;
+  let best = higherIsBetter ? -Infinity : Infinity;
   for (let i = 0; i < values.length; i++) {
-    const isBetter = ergChartUnit === 'watts' ? values[i] > best : values[i] < best;
+    const isBetter = higherIsBetter ? values[i] > best : values[i] < best;
     if (isBetter) best = values[i];
     if (i > 0) {
-      const curBest = ergChartUnit === 'watts' ? values[i] >= best : values[i] <= best;
+      const curBest = higherIsBetter ? values[i] >= best : values[i] <= best;
       if (curBest) {
         segmentColors.push(COLORS.green);
       } else {
@@ -672,7 +675,7 @@ function renderErgChart() {
   ergChart = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets: [{
-      label: ergChartUnit === 'watts' ? 'Watts' : '500m Split',
+      label: ergChartUnit === 'watts' ? 'Watts' : ergChartUnit === 'time' ? 'Total Time' : '500m Split',
       data: values,
       borderColor: COLORS.accent,
       borderWidth: 2.5,
@@ -681,7 +684,7 @@ function renderErgChart() {
       pointBackgroundColor: (ctx) => {
         const i = ctx.dataIndex;
         if (i === 0) return COLORS.accent;
-        const isBest = ergChartUnit === 'watts'
+        const isBest = higherIsBetter
           ? values[i] >= Math.max(...values.slice(0, i+1))
           : values[i] <= Math.min(...values.slice(0, i+1));
         return isBest ? COLORS.green : COLORS.accent;
@@ -702,7 +705,15 @@ function renderErgChart() {
       maintainAspectRatio: false,
       interaction: { mode: 'nearest', intersect: true },
       plugins: {
-        legend: { display: false },
+        legend: {
+          display: true, position: 'top', align: 'center',
+          onClick: () => {},
+          labels: {
+            color: COLORS.textMuted,
+            font: { family: COLORS.fontMono, size: 12 },
+            usePointStyle: true, pointStyle: 'circle', padding: 16
+          }
+        },
         tooltip: {
           backgroundColor: COLORS.tooltipBg,
           titleColor: COLORS.textLight,
@@ -729,7 +740,7 @@ function renderErgChart() {
           ticks: { color: COLORS.textMuted, font: { family: COLORS.fontMono, size: 11 }, maxRotation: 0, padding: 10 }
         },
         y: {
-          reverse: ergChartUnit === 'split',
+          reverse: ergChartUnit !== 'watts',
           grid: { color: COLORS.grid, drawTicks: false },
           border: { color: COLORS.border },
           ticks: {
