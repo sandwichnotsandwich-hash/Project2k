@@ -253,7 +253,12 @@ async function fetchWeights() {
 weightForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const date = dateInput.value;
-  const weight = parseFloat(weightInput.value);
+  let weight = parseFloat(weightInput.value);
+  // On mobile, get weight from wheel display if input is hidden
+  if (isNaN(weight)) {
+    const wheelVal = document.getElementById('weight-wheel-value');
+    if (wheelVal) weight = parseFloat(wheelVal.textContent);
+  }
   if (!date || isNaN(weight)) return showMsg(weightMsg, 'Enter a valid date and weight.', 'error');
   try {
     await authFetch('/api/weights', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({date, weight}) });
@@ -791,6 +796,119 @@ function chartOptions(unit) {
     }
   };
 }
+
+// ===================== WHEEL PICKER =====================
+
+(function() {
+  const overlay = document.getElementById('weight-wheel-overlay');
+  const display = document.getElementById('weight-wheel-display');
+  const displayValue = document.getElementById('weight-wheel-value');
+  const wholeCol = document.getElementById('wheel-whole');
+  const decimalCol = document.getElementById('wheel-decimal');
+  const cancelBtn = document.getElementById('wheel-cancel');
+  const doneBtn = document.getElementById('wheel-done');
+
+  if (!overlay || !display) return; // desktop fallback
+
+  const ITEM_H = 44;
+  const PAD_ITEMS = 2; // padding items above/below for scroll space
+  let currentWhole = 170;
+  let currentDecimal = 0;
+
+  function buildCol(col, min, max) {
+    col.innerHTML = '';
+    // Top padding
+    for (let i = 0; i < PAD_ITEMS; i++) {
+      const pad = document.createElement('div');
+      pad.className = 'wheel-item wheel-pad';
+      pad.textContent = '';
+      col.appendChild(pad);
+    }
+    for (let v = min; v <= max; v++) {
+      const item = document.createElement('div');
+      item.className = 'wheel-item';
+      item.textContent = v;
+      item.dataset.value = v;
+      col.appendChild(item);
+    }
+    // Bottom padding
+    for (let i = 0; i < PAD_ITEMS; i++) {
+      const pad = document.createElement('div');
+      pad.className = 'wheel-item wheel-pad';
+      pad.textContent = '';
+      col.appendChild(pad);
+    }
+  }
+
+  function scrollToValue(col, value, min) {
+    const idx = value - min;
+    col.scrollTop = idx * ITEM_H;
+  }
+
+  function getSelectedValue(col, min) {
+    const idx = Math.round(col.scrollTop / ITEM_H);
+    return min + idx;
+  }
+
+  function updateSelected(col, min, max) {
+    const idx = Math.round(col.scrollTop / ITEM_H);
+    const items = col.querySelectorAll('.wheel-item:not(.wheel-pad)');
+    items.forEach((item, i) => {
+      item.classList.toggle('selected', i === idx);
+    });
+  }
+
+  buildCol(wholeCol, 80, 350);
+  buildCol(decimalCol, 0, 9);
+
+  wholeCol.addEventListener('scroll', () => updateSelected(wholeCol, 80, 350));
+  decimalCol.addEventListener('scroll', () => updateSelected(decimalCol, 0, 9));
+
+  // Snap on scroll end
+  let wholeTimer, decTimer;
+  wholeCol.addEventListener('scroll', () => {
+    clearTimeout(wholeTimer);
+    wholeTimer = setTimeout(() => {
+      const idx = Math.round(wholeCol.scrollTop / ITEM_H);
+      wholeCol.scrollTo({ top: idx * ITEM_H, behavior: 'smooth' });
+    }, 80);
+  });
+  decimalCol.addEventListener('scroll', () => {
+    clearTimeout(decTimer);
+    decTimer = setTimeout(() => {
+      const idx = Math.round(decimalCol.scrollTop / ITEM_H);
+      decimalCol.scrollTo({ top: idx * ITEM_H, behavior: 'smooth' });
+    }, 80);
+  });
+
+  display.addEventListener('click', () => {
+    overlay.classList.add('active');
+    scrollToValue(wholeCol, currentWhole, 80);
+    scrollToValue(decimalCol, currentDecimal, 0);
+    setTimeout(() => {
+      updateSelected(wholeCol, 80, 350);
+      updateSelected(decimalCol, 0, 9);
+    }, 50);
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    overlay.classList.remove('active');
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+
+  doneBtn.addEventListener('click', () => {
+    currentWhole = getSelectedValue(wholeCol, 80);
+    currentDecimal = getSelectedValue(decimalCol, 0);
+    const weight = currentWhole + currentDecimal * 0.1;
+    displayValue.textContent = weight.toFixed(1);
+    // Also set the hidden input so the form submission works
+    document.getElementById('weight-input').value = weight;
+    overlay.classList.remove('active');
+  });
+})();
 
 // ===================== KEYBOARD =====================
 document.addEventListener('keydown', (e) => {
