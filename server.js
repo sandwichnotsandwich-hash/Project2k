@@ -54,11 +54,32 @@ async function initDB() {
     )
   `);
 
-  // Migration: add user_id column if tables already exist without it
+  // Migration: add user_id column and fix constraints if tables already exist
   try {
     await pool.query(`ALTER TABLE weights ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id)`);
     await pool.query(`ALTER TABLE ergtimes ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id)`);
-  } catch (e) { /* column may already exist */ }
+    // Drop old unique constraint on date alone (if exists)
+    await pool.query(`ALTER TABLE weights DROP CONSTRAINT IF EXISTS weights_date_key`);
+    await pool.query(`ALTER TABLE ergtimes DROP CONSTRAINT IF EXISTS ergtimes_date_key`);
+    // Delete any old entries without a user_id (orphaned data)
+    await pool.query(`DELETE FROM weights WHERE user_id IS NULL`);
+    await pool.query(`DELETE FROM ergtimes WHERE user_id IS NULL`);
+    // Add composite unique if not exists
+    await pool.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'weights_user_id_date_key') THEN
+          ALTER TABLE weights ADD CONSTRAINT weights_user_id_date_key UNIQUE (user_id, date);
+        END IF;
+      END $$;
+    `);
+    await pool.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'ergtimes_user_id_date_key') THEN
+          ALTER TABLE ergtimes ADD CONSTRAINT ergtimes_user_id_date_key UNIQUE (user_id, date);
+        END IF;
+      END $$;
+    `);
+  } catch (e) { console.log('Migration note:', e.message); }
 
   console.log('Database tables ready');
 }
