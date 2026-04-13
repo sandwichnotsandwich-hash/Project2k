@@ -212,80 +212,6 @@ function updateHeroStats() {
   }
 }
 
-// ===================== WEIGHT TARGET =====================
-
-function updateWeightTarget() {
-  const saved = localStorage.getItem('bulk_weight_target');
-  const displayEl = document.getElementById('goal-display');
-  const emptyEl = document.getElementById('goal-empty');
-
-  if (!saved) {
-    displayEl.style.display = 'none';
-    emptyEl.style.display = 'block';
-    return;
-  }
-
-  const { targetWeight, targetDate } = JSON.parse(saved);
-
-  if (!weightEntries.length) {
-    displayEl.style.display = 'none';
-    emptyEl.textContent = 'Log a weight to see your weekly plan.';
-    emptyEl.style.display = 'block';
-    return;
-  }
-
-  emptyEl.style.display = 'none';
-  displayEl.style.display = 'block';
-
-  const current = weightEntries[weightEntries.length - 1].weight;
-  const remaining = targetWeight - current;
-  const today = new Date();
-  const deadline = new Date(targetDate + 'T00:00:00');
-  const msLeft = deadline - today;
-  const weeksLeft = msLeft / (1000 * 60 * 60 * 24 * 7);
-
-  document.getElementById('goal-current-weight').textContent = current.toFixed(1);
-  document.getElementById('goal-target-weight').textContent = targetWeight.toFixed(1);
-
-  if (remaining <= 0) {
-    document.getElementById('goal-per-week').textContent = 'Done!';
-    document.getElementById('goal-detail').innerHTML = '<strong>Goal reached!</strong> You hit your target weight.';
-  } else if (weeksLeft <= 0) {
-    document.getElementById('goal-per-week').textContent = '—';
-    document.getElementById('goal-detail').innerHTML = 'Target date has passed. <strong>' + remaining.toFixed(1) + ' lbs</strong> remaining. Update your target date.';
-  } else {
-    const perWeek = remaining / weeksLeft;
-    document.getElementById('goal-per-week').textContent = '+' + perWeek.toFixed(2);
-
-    const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
-    const deadlineStr = deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    document.getElementById('goal-detail').innerHTML =
-      `<strong>${remaining.toFixed(1)} lbs</strong> to go · <strong>${daysLeft}</strong> days left (${deadlineStr})`;
-  }
-}
-
-// Toggle goal form
-document.getElementById('goal-toggle-btn').addEventListener('click', () => {
-  const form = document.getElementById('goal-form');
-  form.style.display = form.style.display === 'none' ? 'block' : 'none';
-  const saved = localStorage.getItem('bulk_weight_target');
-  if (saved) {
-    const { targetWeight, targetDate } = JSON.parse(saved);
-    document.getElementById('goal-weight').value = targetWeight;
-    document.getElementById('goal-date').value = targetDate;
-  }
-});
-
-// Save goal
-document.getElementById('goal-save-btn').addEventListener('click', () => {
-  const targetWeight = parseFloat(document.getElementById('goal-weight').value);
-  const targetDate = document.getElementById('goal-date').value;
-  if (isNaN(targetWeight) || targetWeight <= 0 || !targetDate) return;
-  localStorage.setItem('bulk_weight_target', JSON.stringify({ targetWeight, targetDate }));
-  document.getElementById('goal-form').style.display = 'none';
-  updateWeightTarget();
-});
-
 // ===================== TAB SWITCHING =====================
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -322,7 +248,6 @@ async function fetchWeights() {
   renderWeightTable();
   renderWeightChart();
   updateHeroStats();
-  updateWeightTarget();
 }
 
 weightForm.addEventListener('submit', async (e) => {

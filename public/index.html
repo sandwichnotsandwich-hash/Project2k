@@ -76,48 +76,6 @@
       <p id="form-message" class="form-message"></p>
     </section>
 
-    <section class="card goal-card" id="weight-goal-card">
-      <div class="card-header">
-        <h2>Weight Target</h2>
-        <button type="button" class="goal-toggle-btn" id="goal-toggle-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-      </div>
-      <div class="goal-form" id="goal-form" style="display:none;">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="goal-weight">Target Weight (lbs)</label>
-            <input type="number" id="goal-weight" step="0.1" min="50" max="500" placeholder="200">
-          </div>
-          <div class="form-group">
-            <label for="goal-date">Target Date</label>
-            <input type="date" id="goal-date">
-          </div>
-        </div>
-        <button type="button" class="goal-save-btn" id="goal-save-btn">Set Target</button>
-      </div>
-      <div class="goal-display" id="goal-display" style="display:none;">
-        <div class="goal-stats">
-          <div class="goal-stat">
-            <span class="goal-stat-value" id="goal-current-weight">—</span>
-            <span class="goal-stat-label">Current</span>
-          </div>
-          <div class="goal-stat-arrow">→</div>
-          <div class="goal-stat">
-            <span class="goal-stat-value" id="goal-target-weight">—</span>
-            <span class="goal-stat-label">Target</span>
-          </div>
-          <div class="goal-stat-divider"></div>
-          <div class="goal-stat">
-            <span class="goal-stat-value accent" id="goal-per-week">—</span>
-            <span class="goal-stat-label">lbs/week needed</span>
-          </div>
-        </div>
-        <p class="goal-detail" id="goal-detail"></p>
-      </div>
-      <p class="goal-empty" id="goal-empty">Set a target weight and date to see your weekly plan.</p>
-    </section>
-
     <section class="card chart-card">
       <div class="card-header">
         <h2>Progress</h2>
