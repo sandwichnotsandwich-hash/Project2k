@@ -183,7 +183,6 @@ function updateHeroStats() {
     const gained = (latest.weight - first.weight).toFixed(1);
     const sign = gained > 0 ? '+' : '';
     parts.push(`<div class="hero-stat"><span class="hero-stat-value">${latest.weight.toFixed(1)}</span><span class="hero-stat-label">Current lbs</span></div>`);
-    parts.push(`<div class="hero-stat"><span class="hero-stat-value">${sign}${gained}</span><span class="hero-stat-label">Total Change</span></div>`);
     const goalWeight = localStorage.getItem('bulk_goal_weight');
     if (goalWeight) {
       const remaining = (parseFloat(goalWeight) - latest.weight).toFixed(1);
