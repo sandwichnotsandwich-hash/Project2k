@@ -34,10 +34,6 @@
     <div class="hero-inner">
       <h1 class="hero-title">PROJECT<span class="title-2k">2K</span></h1>
       <p class="hero-tag">Dial in your weight. Track your 2Ks. Crush your PR.</p>
-      <div class="wtp-badge" id="wtp-badge">
-        <span class="wtp-label">W/KG</span>
-        <span class="wtp-value" id="wtp-value">—</span>
-      </div>
       <div class="hero-stats" id="hero-stats"></div>
     </div>
   </header>
@@ -257,6 +253,22 @@
         </div>
         <button type="button" class="btn-delete" id="delete-erg">Delete Entry</button>
       </form>
+    </div>
+  </div>
+
+  <!-- 2K Goal Modal -->
+  <div class="modal-overlay" id="goal-2k-modal">
+    <div class="modal">
+      <h3>2K Goal</h3>
+      <div class="form-group">
+        <label for="goal-2k-input">Target 2K Time (M:SS.s)</label>
+        <input type="text" id="goal-2k-input" placeholder="6:30.0" inputmode="numeric" maxlength="7">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="goal-2k-cancel">Cancel</button>
+        <button type="button" class="btn-primary" id="goal-2k-save">Save</button>
+      </div>
+      <button type="button" class="btn-delete" id="goal-2k-clear">Clear Goal</button>
     </div>
   </div>
 
