@@ -595,9 +595,12 @@ button[type="submit"]:active,
 .wheel-col {
   height: 100%;
   width: 80px;
+  overflow-x: hidden;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: y mandatory;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
   -ms-overflow-style: none;
   scrollbar-width: none;
   text-align: center;
