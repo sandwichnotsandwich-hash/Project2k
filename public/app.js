@@ -951,7 +951,7 @@ document.getElementById('goal-modal').addEventListener('click', (e) => {
 });
 
 document.getElementById('goal-save').addEventListener('click', () => {
-  const val = parseFloat(document.getElementById('goal-weight-input').value);
+  const val = Math.round(parseFloat(document.getElementById('goal-weight-input').value));
   if (isNaN(val) || val <= 0) return;
   localStorage.setItem('bulk_goal_weight', val);
   document.getElementById('goal-modal').classList.remove('active');
