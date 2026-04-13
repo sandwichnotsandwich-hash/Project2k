@@ -1068,11 +1068,6 @@ footer p:last-child {
     height: 200px;
   }
 
-  thead th:nth-child(3),
-  tbody td:nth-child(3) {
-    display: none;
-  }
-
   #erg-table thead th:nth-child(4),
   #erg-table tbody td:nth-child(4) {
     display: none;
