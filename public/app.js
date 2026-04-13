@@ -1038,25 +1038,12 @@ document.addEventListener('keydown', (e) => {
 
 // ===================== LAYOUT =====================
 function updateHeaderLayout() {
-  const hero = document.querySelector('.hero');
-  const tabNav = document.querySelector('.tab-nav');
-  const hamburger = document.getElementById('hamburger-btn');
-  if (!hero || !tabNav) return;
-  const heroH = hero.offsetHeight;
-  tabNav.style.top = heroH + 'px';
-  const tabH = tabNav.offsetHeight;
+  const fixedHeader = document.getElementById('fixed-header');
+  if (!fixedHeader) return;
+  const headerH = fixedHeader.offsetHeight;
   document.querySelectorAll('.container').forEach(c => {
-    c.style.paddingTop = (heroH + tabH + 12) + 'px';
+    c.style.paddingTop = (headerH + 12) + 'px';
   });
-  // Align hamburger right edge with tab buttons right edge
-  if (hamburger) {
-    const tabInner = document.querySelector('.tab-nav-inner');
-    if (tabInner) {
-      const tabRect = tabInner.getBoundingClientRect();
-      const rightOffset = window.innerWidth - tabRect.right;
-      hamburger.style.right = rightOffset + 'px';
-    }
-  }
 }
 
 window.addEventListener('resize', updateHeaderLayout);

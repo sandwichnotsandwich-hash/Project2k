@@ -86,15 +86,19 @@ body {
 }
 
 
-/* ===================== SUMMARY HEADER ===================== */
-.hero {
+/* ===================== FIXED HEADER ===================== */
+.fixed-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 60;
-  padding: 16px 16px 0;
   background: var(--bg);
+}
+
+/* ===================== SUMMARY HEADER ===================== */
+.hero {
+  padding: 16px 16px 0;
   overflow: hidden;
 }
 
@@ -192,11 +196,10 @@ body {
 
 /* ===================== HAMBURGER MENU ===================== */
 .hamburger-btn {
-  position: fixed;
+  position: absolute;
   top: 16px;
-  right: 16px;
+  right: 0;
   z-index: 150;
-  /* JS will update right position to align with tab buttons */
   width: 36px;
   height: 36px;
   background: var(--bg-card);
@@ -306,11 +309,6 @@ body {
 
 /* ===================== TAB NAV ===================== */
 .tab-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: 55;
-  background: var(--bg);
   padding: 8px 16px 10px;
   border-bottom: 1px solid var(--separator);
 }
