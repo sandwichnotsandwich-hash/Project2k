@@ -696,7 +696,7 @@ function renderErgChart() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
+      interaction: { mode: 'nearest', intersect: true },
       plugins: {
         legend: {
           display: true, position: 'top', align: 'start',
@@ -786,7 +786,7 @@ function chartOptions(unit) {
   return {
     responsive: true,
     maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
+    interaction: { mode: 'nearest', intersect: true },
     plugins: {
       legend: {
         position: 'top', align: 'start',
