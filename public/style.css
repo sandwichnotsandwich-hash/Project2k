@@ -694,7 +694,7 @@ button[type="submit"]:active,
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 220px;
+  height: 210px;
   position: relative;
   overflow: hidden;
   gap: 0;
@@ -702,7 +702,7 @@ button[type="submit"]:active,
 
 .wheel-col {
   height: 100%;
-  width: 80px;
+  width: 70px;
   overflow-x: hidden;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
@@ -719,58 +719,55 @@ button[type="submit"]:active,
 }
 
 .wheel-col .wheel-item {
-  height: 44px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.375rem;
-  font-weight: 500;
-  color: var(--text-tertiary);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.25);
   scroll-snap-align: center;
-  transition: color 0.15s, transform 0.15s;
   font-variant-numeric: tabular-nums;
+  user-select: none;
 }
 
 .wheel-col .wheel-item.selected {
   color: var(--text-primary);
   font-weight: 600;
-  transform: scale(1.05);
 }
 
 .wheel-dot {
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 2px;
+  width: 12px;
+  text-align: center;
   align-self: center;
 }
 
 .wheel-label-overlay {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 500;
   color: var(--text-secondary);
-  margin-left: 8px;
+  margin-left: 6px;
   align-self: center;
 }
 
 .wheel-highlight {
   position: absolute;
-  left: 50%;
+  left: 8%;
+  right: 8%;
   top: 50%;
-  transform: translate(-50%, -50%);
-  width: 85%;
-  height: 44px;
-  background: rgba(120, 120, 128, 0.2);
+  transform: translateY(-50%);
+  height: 34px;
+  background: rgba(120, 120, 128, 0.24);
   border-radius: 8px;
   pointer-events: none;
-  z-index: -1;
 }
 
 .wheel-modal {
   position: relative;
 }
-
-.wheel-body {
   position: relative;
 }
 

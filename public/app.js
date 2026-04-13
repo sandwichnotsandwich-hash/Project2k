@@ -844,14 +844,18 @@ function chartOptions(unit) {
 
   if (!overlay || !display) return; // desktop fallback
 
-  const ITEM_H = 44;
-  const PAD_ITEMS = 2; // padding items above/below for scroll space
+  const ITEM_H = 34;
+  const PAD_ITEMS = 3; // padding items above/below for scroll space
   let currentWhole = 170;
   let currentDecimal = 0;
 
+  // Haptic feedback
+  function haptic() {
+    if (navigator.vibrate) navigator.vibrate(1);
+  }
+
   function buildCol(col, min, max) {
     col.innerHTML = '';
-    // Top padding
     for (let i = 0; i < PAD_ITEMS; i++) {
       const pad = document.createElement('div');
       pad.className = 'wheel-item wheel-pad';
@@ -865,7 +869,6 @@ function chartOptions(unit) {
       item.dataset.value = v;
       col.appendChild(item);
     }
-    // Bottom padding
     for (let i = 0; i < PAD_ITEMS; i++) {
       const pad = document.createElement('div');
       pad.className = 'wheel-item wheel-pad';
@@ -895,8 +898,20 @@ function chartOptions(unit) {
   buildCol(wholeCol, 80, 350);
   buildCol(decimalCol, 0, 9);
 
-  wholeCol.addEventListener('scroll', () => updateSelected(wholeCol, 80, 350));
-  decimalCol.addEventListener('scroll', () => updateSelected(decimalCol, 0, 9));
+  let lastWholeIdx = -1, lastDecIdx = -1;
+
+  function handleScroll(col, min, max, lastIdx) {
+    const idx = Math.round(col.scrollTop / ITEM_H);
+    updateSelected(col, min, max);
+    if (idx !== lastIdx.val) {
+      lastIdx.val = idx;
+      haptic();
+    }
+  }
+
+  const wholeIdx = { val: -1 }, decIdx = { val: -1 };
+  wholeCol.addEventListener('scroll', () => handleScroll(wholeCol, 80, 350, wholeIdx));
+  decimalCol.addEventListener('scroll', () => handleScroll(decimalCol, 0, 9, decIdx));
 
   // Snap on scroll end
   let wholeTimer, decTimer;
