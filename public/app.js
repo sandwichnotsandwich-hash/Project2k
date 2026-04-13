@@ -189,7 +189,7 @@ function updateHeroStats() {
     const goalClass = weightEntries.length > 0 && weightEntries[weightEntries.length - 1].weight >= parseFloat(goalWeight) ? 'goal-reached' : '';
     parts.push(`<div class="hero-stat hero-stat-goal ${goalClass}" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value">${parseFloat(goalWeight).toFixed(0)}</span><span class="hero-stat-label">Goal lbs</span></div>`);
   } else {
-    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value" style="color:var(--text-tertiary)">Set</span><span class="hero-stat-label">Goal lbs</span></div>`);
+    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value" class="goal-unset">Set</span><span class="hero-stat-label">Goal lbs</span></div>`);
   }
 
   // 2K PR
@@ -205,7 +205,7 @@ function updateHeroStats() {
     const goalClass2k = ergEntries.length > 0 && Math.min(...ergEntries.map(e => e.time_seconds)) <= parseFloat(goal2k) ? 'goal-reached' : '';
     parts.push(`<div class="hero-stat hero-stat-goal ${goalClass2k}" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value">${fmtTime(parseFloat(goal2k))}</span><span class="hero-stat-label">2K Goal</span></div>`);
   } else {
-    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value" style="color:var(--text-tertiary)">Set</span><span class="hero-stat-label">2K Goal</span></div>`);
+    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value" class="goal-unset">Set</span><span class="hero-stat-label">2K Goal</span></div>`);
   }
 
   // W/KG

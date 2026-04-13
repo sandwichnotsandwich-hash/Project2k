@@ -195,14 +195,25 @@ body {
 .hero-stat-goal {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  border: 1.5px solid rgba(10, 132, 255, 0.5);
+  border-radius: 10px;
+  padding: 6px 12px;
 }
 
 .hero-stat-goal .hero-stat-value {
   color: #0A84FF;
 }
 
+.hero-stat-goal.goal-reached {
+  border-color: rgba(48, 209, 88, 0.5);
+}
+
 .hero-stat-goal.goal-reached .hero-stat-value {
   color: #30D158;
+}
+
+.hero-stat-goal .goal-unset {
+  color: #FF375F !important;
 }
 
 /* ===================== W/KG BADGE ===================== */
