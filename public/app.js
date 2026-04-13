@@ -439,7 +439,7 @@ ergTimeInput.addEventListener('keydown', function(e) {
 
 // Block paste of non-numeric content
 ergTimeInput.addEventListener('paste', function(e) {
-  if (inputUnit !== 'split') return;
+  if (inputUnit === 'watts') return;
   e.preventDefault();
   const pasted = (e.clipboardData || window.clipboardData).getData('text');
   const digits = pasted.replace(/[^0-9]/g, '').slice(0, 4);
@@ -484,7 +484,7 @@ function parseWattsInput(str) {
 
 // Input unit toggle
 const inputUnitBtns = document.querySelectorAll('.unit-toggle .toggle-btn');
-let inputUnit = 'split';
+let inputUnit = 'time';
 
 inputUnitBtns.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -493,9 +493,14 @@ inputUnitBtns.forEach(btn => {
     inputUnit = btn.dataset.unit;
     const label = document.getElementById('erg-input-label');
     if (inputUnit === 'watts') {
-      label.textContent = '2K Watts';
+      label.textContent = 'Watts';
       ergTimeInput.placeholder = '285';
       ergTimeInput.removeAttribute('maxlength');
+      ergTimeInput.inputMode = 'numeric';
+    } else if (inputUnit === 'split') {
+      label.textContent = '500m Split (M:SS.s)';
+      ergTimeInput.placeholder = '0:00.0';
+      ergTimeInput.setAttribute('maxlength', '6');
       ergTimeInput.inputMode = 'numeric';
     } else {
       label.textContent = '2K Time (M:SS.s)';
@@ -543,6 +548,10 @@ ergForm.addEventListener('submit', async (e) => {
   let timeSec;
   if (inputUnit === 'watts') {
     timeSec = parseWattsInput(raw);
+  } else if (inputUnit === 'split') {
+    // 500m split → total 2K time = split * 4
+    const splitSec = parseTime(raw);
+    timeSec = isNaN(splitSec) ? NaN : splitSec * 4;
   } else {
     timeSec = parseTime(raw);
   }
