@@ -1086,45 +1086,32 @@ tbody td:last-child {
 
 /* ===================== FOOTER ===================== */
 footer {
-  border-top: 1px solid var(--separator);
   margin-top: 0;
 }
 
 .footer-inner {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 24px 20px;
+  padding: 16px 20px 32px;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+}
+
+.ig-footer {
+  color: var(--text-tertiary);
+  transition: color var(--transition);
+  display: block;
+  line-height: 0;
+}
+
+.ig-footer:hover {
+  color: var(--text-secondary);
+}
+
+.menu-ig {
+  display: flex;
   align-items: center;
   gap: 8px;
-  text-align: center;
-}
-
-.footer-brand {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-}
-
-.ig-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--text-secondary);
   text-decoration: none;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  transition: color var(--transition);
-}
-
-.ig-link:hover {
-  color: var(--accent);
-}
-
-footer p:last-child {
-  color: var(--text-tertiary);
-  font-size: 0.75rem;
+  color: var(--text-secondary);
 }
 
 /* ===================== RESPONSIVE ===================== */
