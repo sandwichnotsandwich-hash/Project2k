@@ -187,9 +187,9 @@ body {
 
 /* ===================== HAMBURGER MENU ===================== */
 .hamburger-btn {
-  position: fixed;
-  top: 14px;
-  right: 16px;
+  position: absolute;
+  top: 0;
+  right: 0;
   z-index: 150;
   width: 36px;
   height: 36px;
