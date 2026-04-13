@@ -1090,7 +1090,7 @@ footer {
 }
 
 .footer-inner {
-  padding: 16px 20px 32px;
+  padding: 8px 20px 16px;
   display: flex;
   justify-content: center;
 }
@@ -1108,10 +1108,16 @@ footer {
 
 .menu-ig {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  justify-content: center;
+  padding: 16px 0;
   text-decoration: none;
   color: var(--text-secondary);
+  border-bottom: 1px solid var(--separator);
+  transition: color var(--transition);
+}
+
+.menu-ig:hover {
+  color: var(--text-primary);
 }
 
 /* ===================== RESPONSIVE ===================== */
