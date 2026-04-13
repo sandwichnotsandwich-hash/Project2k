@@ -196,6 +196,7 @@ body {
   top: 16px;
   right: 16px;
   z-index: 150;
+  /* JS will update right position to align with tab buttons */
   width: 36px;
   height: 36px;
   background: var(--bg-card);
@@ -291,14 +292,14 @@ body {
 }
 
 .menu-close {
-  background: var(--fill);
+  background: #0A84FF;
   border: none;
   border-radius: var(--radius-sm);
   padding: 12px;
   font-family: var(--font);
   font-size: 0.9375rem;
-  font-weight: 500;
-  color: #0A84FF;
+  font-weight: 600;
+  color: #FFFFFF;
   cursor: pointer;
   margin-top: auto;
 }
