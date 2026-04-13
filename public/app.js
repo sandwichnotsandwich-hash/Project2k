@@ -184,6 +184,14 @@ function updateHeroStats() {
     const sign = gained > 0 ? '+' : '';
     parts.push(`<div class="hero-stat"><span class="hero-stat-value">${latest.weight.toFixed(1)}</span><span class="hero-stat-label">Current lbs</span></div>`);
     parts.push(`<div class="hero-stat"><span class="hero-stat-value">${sign}${gained}</span><span class="hero-stat-label">Total Change</span></div>`);
+    const goalWeight = localStorage.getItem('bulk_goal_weight');
+    if (goalWeight) {
+      const remaining = (parseFloat(goalWeight) - latest.weight).toFixed(1);
+      const goalClass = remaining <= 0 ? 'goal-reached' : '';
+      parts.push(`<div class="hero-stat hero-stat-goal ${goalClass}" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value">${parseFloat(goalWeight).toFixed(0)}</span><span class="hero-stat-label">Goal lbs</span></div>`);
+    } else {
+      parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value" style="color:var(--text-tertiary)">Set</span><span class="hero-stat-label">Goal lbs</span></div>`);
+    }
   }
 
   if (ergEntries.length > 0) {
@@ -902,6 +910,30 @@ function chartOptions(unit) {
     overlay.classList.remove('active');
   });
 })();
+
+// ===================== WEIGHT GOAL =====================
+
+document.getElementById('goal-cancel').addEventListener('click', () => {
+  document.getElementById('goal-modal').classList.remove('active');
+});
+
+document.getElementById('goal-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'goal-modal') e.target.classList.remove('active');
+});
+
+document.getElementById('goal-save').addEventListener('click', () => {
+  const val = parseFloat(document.getElementById('goal-weight-input').value);
+  if (isNaN(val) || val <= 0) return;
+  localStorage.setItem('bulk_goal_weight', val);
+  document.getElementById('goal-modal').classList.remove('active');
+  updateHeroStats();
+});
+
+document.getElementById('goal-clear').addEventListener('click', () => {
+  localStorage.removeItem('bulk_goal_weight');
+  document.getElementById('goal-modal').classList.remove('active');
+  updateHeroStats();
+});
 
 // ===================== KEYBOARD =====================
 document.addEventListener('keydown', (e) => {

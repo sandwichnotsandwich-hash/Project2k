@@ -192,6 +192,19 @@ body {
   letter-spacing: 0;
 }
 
+.hero-stat-goal {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-stat-goal .hero-stat-value {
+  color: #0A84FF;
+}
+
+.hero-stat-goal.goal-reached .hero-stat-value {
+  color: #30D158;
+}
+
 /* ===================== W/KG BADGE ===================== */
 .wtp-badge {
   position: absolute;
