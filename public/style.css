@@ -392,6 +392,32 @@ body {
   color: var(--text-primary);
 }
 
+.wkg-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  background: rgba(255, 159, 10, 0.12);
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+
+.wkg-badge-label {
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: #FF9F0A;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wkg-badge-value {
+  font-family: var(--font-rounded);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #FF9F0A;
+  line-height: 1;
+}
+
 .card-badge {
   font-size: 0.6875rem;
   font-weight: 600;

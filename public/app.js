@@ -222,7 +222,9 @@ function updateHeroStats() {
     parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">2K Goal</span></div>`);
   }
 
-  // 5. W/KG
+  statsEl.innerHTML = parts.join('');
+
+  // Update W/KG badges on cards
   let wkgVal = '—';
   if (weightEntries.length > 0 && ergEntries.length > 0) {
     const latestWeight = weightEntries[weightEntries.length - 1].weight;
@@ -231,9 +233,7 @@ function updateHeroStats() {
     const watts = timeToWatts(latestErg);
     wkgVal = (watts / weightKg).toFixed(2);
   }
-  parts.push(`<div class="hero-stat"><span class="hero-stat-value">${wkgVal}</span><span class="hero-stat-label">W/KG</span></div>`);
-
-  statsEl.innerHTML = parts.join('');
+  document.querySelectorAll('.wkg-badge-value').forEach(el => { el.textContent = wkgVal; });
 }
 
 // ===================== TAB SWITCHING =====================
