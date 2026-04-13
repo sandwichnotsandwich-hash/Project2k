@@ -672,6 +672,7 @@ function renderErgChart() {
       plugins: {
         legend: {
           display: true, position: 'top', align: 'start',
+          onClick: () => {},
           labels: {
             color: COLORS.textMuted,
             font: { family: COLORS.fontMono, size: 12 },
@@ -761,6 +762,7 @@ function chartOptions(unit) {
     plugins: {
       legend: {
         position: 'top', align: 'start',
+        onClick: () => {},
         labels: {
           color: COLORS.textMuted,
           font: { family: COLORS.fontMono, size: 12 },
