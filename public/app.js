@@ -745,7 +745,7 @@ function renderErgChart() {
           labels: {
             color: COLORS.textMuted,
             font: { family: COLORS.fontMono, size: 12 },
-            usePointStyle: false, boxWidth: 16, boxHeight: 3, padding: 16
+            usePointStyle: true, pointStyle: 'circle', pointStyleWidth: 6, padding: 16
           }
         },
         tooltip: {
@@ -834,7 +834,7 @@ function chartOptions(unit) {
         labels: {
           color: COLORS.textMuted,
           font: { family: COLORS.fontMono, size: 12 },
-          usePointStyle: false, boxWidth: 16, boxHeight: 3, padding: 16
+          usePointStyle: true, pointStyle: 'circle', pointStyleWidth: 6, padding: 16
         }
       },
       tooltip: {
