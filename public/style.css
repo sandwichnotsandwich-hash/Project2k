@@ -988,6 +988,22 @@ footer {
   color: rgba(255, 255, 255, 0.15);
 }
 
+.ig-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+
+.ig-link:hover {
+  color: var(--accent);
+}
+
 footer p:last-child {
   color: var(--text-secondary);
   font-size: 0.8125rem;
