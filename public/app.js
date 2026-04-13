@@ -313,8 +313,8 @@ function renderWeightChart() {
 
   const ctx = document.getElementById('weight-chart').getContext('2d');
   const gradient = ctx.createLinearGradient(0, 0, 0, 320);
-  gradient.addColorStop(0, 'rgba(255, 55, 95, 0.2)');
-  gradient.addColorStop(1, 'rgba(255, 55, 95, 0)');
+  gradient.addColorStop(0, 'rgba(10, 132, 255, 0.2)');
+  gradient.addColorStop(1, 'rgba(10, 132, 255, 0)');
 
   weightChart = new Chart(ctx, {
     type: 'line',
@@ -322,16 +322,12 @@ function renderWeightChart() {
       {
         label: 'Daily Weight',
         data: weights,
-        borderColor: COLORS.accent,
+        borderColor: '#0A84FF',
         backgroundColor: gradient,
         borderWidth: 2.5,
-        pointRadius: 4,
+        pointRadius: 5,
         pointHoverRadius: 7,
-        pointBackgroundColor: (ctx) => {
-          const i = ctx.dataIndex;
-          if (i === 0) return COLORS.textMuted;
-          return weights[i] >= weights[i-1] ? COLORS.green : COLORS.accent;
-        },
+        pointBackgroundColor: '#0A84FF',
         pointBorderColor: COLORS.cardBg,
         pointBorderWidth: 2,
         fill: true,
@@ -340,7 +336,7 @@ function renderWeightChart() {
           borderColor: (ctx) => {
             const prev = ctx.p0.parsed.y;
             const curr = ctx.p1.parsed.y;
-            return curr >= prev ? COLORS.green : COLORS.accent;
+            return curr >= prev ? '#30D158' : '#FF375F';
           }
         }
       },
