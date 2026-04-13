@@ -324,14 +324,25 @@ function renderWeightChart() {
         data: weights,
         borderColor: COLORS.accent,
         backgroundColor: gradient,
-        borderWidth: 2,
+        borderWidth: 2.5,
         pointRadius: 4,
         pointHoverRadius: 7,
-        pointBackgroundColor: COLORS.accent,
+        pointBackgroundColor: (ctx) => {
+          const i = ctx.dataIndex;
+          if (i === 0) return COLORS.textMuted;
+          return weights[i] >= weights[i-1] ? COLORS.green : COLORS.accent;
+        },
         pointBorderColor: COLORS.cardBg,
         pointBorderWidth: 2,
         fill: true,
-        tension: 0.35
+        tension: 0,
+        segment: {
+          borderColor: (ctx) => {
+            const prev = ctx.p0.parsed.y;
+            const curr = ctx.p1.parsed.y;
+            return curr >= prev ? COLORS.green : COLORS.accent;
+          }
+        }
       },
       {
         label: '7-Day Average',
@@ -341,7 +352,7 @@ function renderWeightChart() {
         borderDash: [6, 4],
         pointRadius: 0,
         fill: false,
-        tension: 0.4,
+        tension: 0,
         spanGaps: false
       }
     ]},
