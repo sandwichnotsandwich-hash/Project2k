@@ -77,14 +77,14 @@ body {
 .login-subtitle {
   font-size: 1.25rem;
   color: var(--text-secondary);
-  margin-bottom: 48px;
+  margin-bottom: 64px;
   line-height: 1.5;
 }
 
 .login-cta {
-  font-size: 0.9375rem;
+  font-size: 1.25rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #FF375F;
   margin-bottom: 16px;
 }
 
