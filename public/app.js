@@ -59,8 +59,22 @@ window.handleGoogleSignIn = async function(response) {
   }
 };
 
+// Hamburger menu
+document.getElementById('hamburger-btn').addEventListener('click', () => {
+  document.getElementById('menu-overlay').classList.add('active');
+});
+
+document.getElementById('menu-close').addEventListener('click', () => {
+  document.getElementById('menu-overlay').classList.remove('active');
+});
+
+document.getElementById('menu-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'menu-overlay') e.target.classList.remove('active');
+});
+
 // Sign out
 document.getElementById('signout-btn').addEventListener('click', () => {
+  document.getElementById('menu-overlay').classList.remove('active');
   showLogin();
 });
 

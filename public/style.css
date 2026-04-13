@@ -85,44 +85,6 @@ body {
   justify-content: center;
 }
 
-/* ===================== USER BAR ===================== */
-.user-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  background: var(--bg);
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: none;
-}
-
-.user-name {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.signout-btn {
-  background: none;
-  border: none;
-  color: var(--accent);
-  font-family: var(--font);
-  font-size: 0.9375rem;
-  font-weight: 400;
-  cursor: pointer;
-  padding: 4px 0;
-}
 
 /* ===================== SUMMARY HEADER ===================== */
 .hero {
@@ -216,38 +178,118 @@ body {
   color: #FF375F !important;
 }
 
-/* ===================== W/KG BADGE ===================== */
-.wtp-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
+/* ===================== HAMBURGER MENU ===================== */
+.hamburger-btn {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 150;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-card);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 1px;
+  transition: all 0.2s ease;
+}
+
+.menu-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+}
+
+.menu-overlay.active {
+  display: block;
+}
+
+.menu-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 260px;
+  height: 100%;
   background: var(--bg-card);
-  border-radius: var(--radius-sm);
-  padding: 6px 10px;
+  padding: 60px 24px 40px;
+  animation: slideIn 0.25s ease;
+  display: flex;
+  flex-direction: column;
 }
 
-.wtp-label {
-  font-size: 0.5625rem;
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--separator);
+  margin-bottom: 16px;
+}
+
+.menu-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: none;
+}
+
+.menu-name {
+  font-size: 1rem;
   font-weight: 600;
+  color: var(--text-primary);
+}
+
+.menu-items {
+  flex: 1;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 14px 0;
+  font-family: var(--font);
+  font-size: 0.9375rem;
+  color: var(--accent);
+  cursor: pointer;
+  border-bottom: 1px solid var(--separator);
+}
+
+.menu-close {
+  background: var(--fill);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-family: var(--font);
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: var(--text-secondary);
-  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: auto;
 }
-
-.wtp-value {
-  font-family: var(--font-rounded);
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--accent-orange);
-  line-height: 1;
-}
-
-/* ===================== THEME TOGGLE ===================== */
-.theme-toggle { display: none; }
-.theme-dot { display: none; }
 
 /* ===================== TAB NAV ===================== */
 .tab-nav {
