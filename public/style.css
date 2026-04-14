@@ -289,12 +289,14 @@ body {
 }
 
 .menu-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
   background: none;
   border: none;
   text-align: left;
-  padding: 14px 0;
+  padding: 20px 0;
   font-family: var(--font);
   font-size: 0.9375rem;
   color: var(--accent);
