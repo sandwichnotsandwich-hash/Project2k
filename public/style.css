@@ -945,10 +945,9 @@ footer {
 .menu-ig {
   display: flex;
   justify-content: center;
-  padding: 16px 0;
+  padding: 24px 0;
   text-decoration: none;
   color: var(--text-secondary);
-  border-bottom: 1px solid var(--separator);
   transition: color var(--transition);
 }
 
