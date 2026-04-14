@@ -945,7 +945,7 @@ footer {
 .menu-donate-btn {
   display: block;
   width: 100%;
-  background: #0A84FF;
+  background: #FF375F;
   color: #FFFFFF;
   text-align: center;
   text-decoration: none;
@@ -963,9 +963,10 @@ footer {
 }
 
 .menu-donate-text {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
   line-height: 1.5;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   padding-bottom: 16px;
   border-bottom: 1px solid var(--separator);
   margin-bottom: 4px;
