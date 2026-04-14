@@ -70,7 +70,8 @@ body {
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
-  margin-bottom: 12px;
+  line-height: 1;
+  margin-bottom: 4px;
   text-transform: uppercase;
 }
 
