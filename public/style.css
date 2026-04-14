@@ -95,12 +95,13 @@ body {
 }
 
 .login-donate-text {
-  margin-top: 64px;
+  margin: 64px auto 0 auto;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
   color: var(--text-primary);
   max-width: 420px;
+  text-align: center;
 }
 
 
