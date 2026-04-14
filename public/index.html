@@ -81,12 +81,8 @@
             <input type="date" id="date-input" required>
           </div>
           <div class="form-group">
-            <label>Weight (lbs)</label>
-            <input type="number" id="weight-input" step="0.1" min="50" max="400" placeholder="185.0" class="desktop-only">
-            <div class="wheel-display" id="weight-wheel-display">
-              <span id="weight-wheel-value">170.0</span>
-              <span class="wheel-unit">lbs</span>
-            </div>
+            <label for="weight-input">Weight (lbs)</label>
+            <input type="text" id="weight-input" placeholder="0.0" inputmode="numeric" maxlength="5" required>
           </div>
         </div>
         <button type="submit" id="submit-btn">
@@ -94,24 +90,6 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </form>
-
-      <!-- Weight Wheel Picker -->
-      <div class="wheel-overlay" id="weight-wheel-overlay">
-        <div class="wheel-modal">
-          <div class="wheel-header">
-            <button type="button" class="wheel-cancel" id="wheel-cancel">Cancel</button>
-            <span class="wheel-title">Weight</span>
-            <button type="button" class="wheel-done" id="wheel-done">Done</button>
-          </div>
-          <div class="wheel-body">
-            <div class="wheel-col" id="wheel-whole" data-min="80" data-max="350"></div>
-            <div class="wheel-dot">.</div>
-            <div class="wheel-col" id="wheel-decimal" data-min="0" data-max="9"></div>
-            <div class="wheel-label-overlay">lbs</div>
-          </div>
-          <div class="wheel-highlight"></div>
-        </div>
-      </div>
       <p id="form-message" class="form-message"></p>
     </section>
 

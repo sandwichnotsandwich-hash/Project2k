@@ -281,12 +281,7 @@ async function fetchWeights() {
 weightForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const date = dateInput.value;
-  let weight = parseFloat(weightInput.value);
-  // On mobile, get weight from wheel display if input is hidden
-  if (isNaN(weight)) {
-    const wheelVal = document.getElementById('weight-wheel-value');
-    if (wheelVal) weight = parseFloat(wheelVal.textContent);
-  }
+  const weight = parseFloat(weightInput.value);
   if (!date || isNaN(weight)) return showMsg(weightMsg, 'Enter a valid date and weight.', 'error');
   try {
     await authFetch('/api/weights', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({date, weight}) });
@@ -818,131 +813,40 @@ function chartOptions(unit) {
   };
 }
 
-// ===================== WHEEL PICKER =====================
+// ===================== WEIGHT INPUT AUTO-FORMAT =====================
+
+// Format: XXX.X (1-4 digits → decimal auto-inserted before last digit)
+function formatWeightDigits(d) {
+  if (d.length === 0) return '';
+  if (d.length === 1) return d;
+  return d.slice(0, -1) + '.' + d.slice(-1);
+}
 
 (function() {
-  const overlay = document.getElementById('weight-wheel-overlay');
-  const display = document.getElementById('weight-wheel-display');
-  const displayValue = document.getElementById('weight-wheel-value');
-  const wholeCol = document.getElementById('wheel-whole');
-  const decimalCol = document.getElementById('wheel-decimal');
-  const cancelBtn = document.getElementById('wheel-cancel');
-  const doneBtn = document.getElementById('wheel-done');
+  const wInput = document.getElementById('weight-input');
+  if (!wInput) return;
 
-  if (!overlay || !display) return; // desktop fallback
-
-  const ITEM_H = 34;
-  const PAD_ITEMS = 3; // padding items above/below for scroll space
-  let currentWhole = 170;
-  let currentDecimal = 0;
-
-  // Haptic feedback
-  function haptic() {
-    if (navigator.vibrate) navigator.vibrate(1);
-  }
-
-  function buildCol(col, min, max) {
-    col.innerHTML = '';
-    for (let i = 0; i < PAD_ITEMS; i++) {
-      const pad = document.createElement('div');
-      pad.className = 'wheel-item wheel-pad';
-      pad.textContent = '';
-      col.appendChild(pad);
+  wInput.addEventListener('keydown', function(e) {
+    if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        const digits = this.value.replace(/[^0-9]/g, '');
+        this.value = formatWeightDigits(digits.slice(0, -1));
+      }
+      return;
     }
-    for (let v = min; v <= max; v++) {
-      const item = document.createElement('div');
-      item.className = 'wheel-item';
-      item.textContent = v;
-      item.dataset.value = v;
-      col.appendChild(item);
-    }
-    for (let i = 0; i < PAD_ITEMS; i++) {
-      const pad = document.createElement('div');
-      pad.className = 'wheel-item wheel-pad';
-      pad.textContent = '';
-      col.appendChild(pad);
-    }
-  }
-
-  function scrollToValue(col, value, min) {
-    const idx = value - min;
-    col.scrollTop = idx * ITEM_H;
-  }
-
-  function getSelectedValue(col, min) {
-    const idx = Math.round(col.scrollTop / ITEM_H);
-    return min + idx;
-  }
-
-  function updateSelected(col, min, max) {
-    const idx = Math.round(col.scrollTop / ITEM_H);
-    const items = col.querySelectorAll('.wheel-item:not(.wheel-pad)');
-    items.forEach((item, i) => {
-      item.classList.toggle('selected', i === idx);
-    });
-  }
-
-  buildCol(wholeCol, 80, 350);
-  buildCol(decimalCol, 0, 9);
-
-  let lastWholeIdx = -1, lastDecIdx = -1;
-
-  function handleScroll(col, min, max, lastIdx) {
-    const idx = Math.round(col.scrollTop / ITEM_H);
-    updateSelected(col, min, max);
-    if (idx !== lastIdx.val) {
-      lastIdx.val = idx;
-      haptic();
-    }
-  }
-
-  const wholeIdx = { val: -1 }, decIdx = { val: -1 };
-  wholeCol.addEventListener('scroll', () => handleScroll(wholeCol, 80, 350, wholeIdx));
-  decimalCol.addEventListener('scroll', () => handleScroll(decimalCol, 0, 9, decIdx));
-
-  // Snap on scroll end
-  let wholeTimer, decTimer;
-  wholeCol.addEventListener('scroll', () => {
-    clearTimeout(wholeTimer);
-    wholeTimer = setTimeout(() => {
-      const idx = Math.round(wholeCol.scrollTop / ITEM_H);
-      wholeCol.scrollTo({ top: idx * ITEM_H, behavior: 'smooth' });
-    }, 80);
-  });
-  decimalCol.addEventListener('scroll', () => {
-    clearTimeout(decTimer);
-    decTimer = setTimeout(() => {
-      const idx = Math.round(decimalCol.scrollTop / ITEM_H);
-      decimalCol.scrollTo({ top: idx * ITEM_H, behavior: 'smooth' });
-    }, 80);
+    if (!/^\d$/.test(e.key)) { e.preventDefault(); return; }
+    e.preventDefault();
+    const digits = this.value.replace(/[^0-9]/g, '');
+    if (digits.length >= 4) return; // max 4 digits: XXX.X
+    this.value = formatWeightDigits(digits + e.key);
   });
 
-  display.addEventListener('click', () => {
-    overlay.classList.add('active');
-    scrollToValue(wholeCol, currentWhole, 80);
-    scrollToValue(decimalCol, currentDecimal, 0);
-    setTimeout(() => {
-      updateSelected(wholeCol, 80, 350);
-      updateSelected(decimalCol, 0, 9);
-    }, 50);
-  });
-
-  cancelBtn.addEventListener('click', () => {
-    overlay.classList.remove('active');
-  });
-
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) overlay.classList.remove('active');
-  });
-
-  doneBtn.addEventListener('click', () => {
-    currentWhole = getSelectedValue(wholeCol, 80);
-    currentDecimal = getSelectedValue(decimalCol, 0);
-    const weight = currentWhole + currentDecimal * 0.1;
-    displayValue.textContent = weight.toFixed(1);
-    // Also set the hidden input so the form submission works
-    document.getElementById('weight-input').value = weight;
-    overlay.classList.remove('active');
+  wInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const digits = pasted.replace(/[^0-9]/g, '').slice(0, 4);
+    this.value = formatWeightDigits(digits);
   });
 })();
 
