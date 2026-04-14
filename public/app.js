@@ -952,9 +952,21 @@ function updateHeaderLayout() {
 
 window.addEventListener('resize', updateHeaderLayout);
 window.addEventListener('load', updateHeaderLayout);
-// Run after a short delay to ensure fonts are loaded
+window.addEventListener('orientationchange', updateHeaderLayout);
 setTimeout(updateHeaderLayout, 100);
 setTimeout(updateHeaderLayout, 500);
+setTimeout(updateHeaderLayout, 1000);
+
+// Observe header size changes (stats populate async, fonts load, etc.)
+if (typeof ResizeObserver !== 'undefined') {
+  const ro = new ResizeObserver(updateHeaderLayout);
+  const observeHeader = () => {
+    const h = document.getElementById('fixed-header');
+    if (h) ro.observe(h);
+    else setTimeout(observeHeader, 100);
+  };
+  observeHeader();
+}
 
 // ===================== INIT =====================
 initGoogleSignIn();
