@@ -942,6 +942,35 @@ footer {
   color: var(--text-secondary);
 }
 
+.menu-donate-btn {
+  display: block;
+  width: 100%;
+  background: #0A84FF;
+  color: #FFFFFF;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--font);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  transition: opacity var(--transition);
+}
+
+.menu-donate-btn:hover {
+  opacity: 0.85;
+}
+
+.menu-donate-text {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--separator);
+  margin-bottom: 4px;
+}
+
 .menu-ig {
   display: flex;
   justify-content: center;
