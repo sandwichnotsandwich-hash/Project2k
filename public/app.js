@@ -836,18 +836,11 @@ function renderErgChart() {
   const ergDatasets = [{
     label: ergChartUnit === 'watts' ? 'Watts' : ergChartUnit === 'time' ? 'Total Time' : '500m Split',
     data: values,
-    borderColor: COLORS.accent,
+    borderColor: '#0A84FF',
     borderWidth: 2.5,
     pointRadius: 5,
     pointHoverRadius: 8,
-    pointBackgroundColor: (ctx) => {
-      const i = ctx.dataIndex;
-      if (i === 0) return COLORS.accent;
-      const isBest = higherIsBetter
-        ? values[i] >= Math.max(...values.slice(0, i+1))
-        : values[i] <= Math.min(...values.slice(0, i+1));
-      return isBest ? COLORS.green : COLORS.accent;
-    },
+    pointBackgroundColor: '#0A84FF',
     pointBorderColor: COLORS.cardBg,
     pointBorderWidth: 2,
     fill: false,
