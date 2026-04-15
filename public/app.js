@@ -780,7 +780,7 @@ function renderErgChart() {
           ticks: { color: COLORS.textMuted, font: { family: COLORS.fontMono, size: 11 }, maxRotation: 0, padding: 10 }
         },
         y: {
-          reverse: ergChartUnit !== 'watts',
+          reverse: false,
           grid: { color: COLORS.grid, drawTicks: false },
           border: { color: COLORS.border },
           ticks: {
