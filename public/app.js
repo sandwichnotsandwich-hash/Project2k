@@ -500,6 +500,50 @@ function parseWattsInput(str) {
 const inputUnitBtns = document.querySelectorAll('.unit-toggle .toggle-btn');
 let inputUnit = 'time';
 
+// Live preview: auto-calculate the other two metrics
+function updateErgPreview() {
+  const raw = ergTimeInput.value;
+  let timeSec = NaN; // Total 2K time in seconds
+
+  if (inputUnit === 'watts') {
+    const w = parseFloat(raw);
+    if (!isNaN(w) && w > 0) {
+      timeSec = wattsToSplit(w) * 4;
+    }
+  } else if (inputUnit === 'split') {
+    const s = parseTime(raw);
+    if (!isNaN(s)) timeSec = s * 4;
+  } else {
+    // time
+    const t = parseTime(raw);
+    if (!isNaN(t)) timeSec = t;
+  }
+
+  const tEl = document.getElementById('preview-time');
+  const sEl = document.getElementById('preview-split');
+  const wEl = document.getElementById('preview-watts');
+  if (!tEl) return;
+
+  if (isNaN(timeSec) || timeSec <= 0) {
+    tEl.textContent = '—';
+    sEl.textContent = '—';
+    wEl.textContent = '—';
+    return;
+  }
+
+  const splitSec = timeSec / 4;
+  const watts = timeToWatts(timeSec);
+  tEl.textContent = fmtTime(timeSec);
+  sEl.textContent = fmtTime(splitSec);
+  wEl.textContent = Math.round(watts);
+}
+
+function updatePreviewActive() {
+  document.querySelectorAll('.erg-preview-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.preview === inputUnit);
+  });
+}
+
 inputUnitBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     inputUnitBtns.forEach(b => b.classList.remove('active'));
@@ -513,18 +557,27 @@ inputUnitBtns.forEach(btn => {
       ergTimeInput.inputMode = 'numeric';
     } else if (inputUnit === 'split') {
       label.textContent = '500m Split (M:SS.s)';
-      ergTimeInput.placeholder = '0:00.0';
+      ergTimeInput.placeholder = 'MM:SS.S';
       ergTimeInput.setAttribute('maxlength', '6');
       ergTimeInput.inputMode = 'numeric';
     } else {
       label.textContent = '2K Time (M:SS.s)';
-      ergTimeInput.placeholder = '0:00.0';
+      ergTimeInput.placeholder = 'MM:SS.S';
       ergTimeInput.setAttribute('maxlength', '6');
       ergTimeInput.inputMode = 'numeric';
     }
     ergTimeInput.value = '';
+    updatePreviewActive();
+    updateErgPreview();
   });
 });
+
+// Wire up live preview on input changes
+ergTimeInput.addEventListener('input', updateErgPreview);
+ergTimeInput.addEventListener('keyup', updateErgPreview);
+
+// Set initial active state
+setTimeout(() => { updatePreviewActive(); updateErgPreview(); }, 0);
 
 // Chart unit toggle
 document.querySelectorAll('.chart-toggle .toggle-btn[data-chart-unit]').forEach(btn => {
