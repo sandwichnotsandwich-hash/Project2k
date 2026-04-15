@@ -326,42 +326,58 @@ function renderWeightChart() {
   const labels = filtered.map(e => shortDate(e.date));
   const weights = filtered.map(e => e.weight);
 
-  if (weightChart) {
-    weightChart.data.labels = labels;
-    weightChart.data.datasets[0].data = weights;
-    weightChart.update(); return;
-  }
+  if (weightChart) { weightChart.destroy(); weightChart = null; }
 
   const ctx = document.getElementById('weight-chart').getContext('2d');
   const gradient = ctx.createLinearGradient(0, 0, 0, 320);
   gradient.addColorStop(0, 'rgba(10, 132, 255, 0.2)');
   gradient.addColorStop(1, 'rgba(10, 132, 255, 0)');
 
-  weightChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets: [
-      {
-        label: 'Daily Weight',
-        data: weights,
-        borderColor: '#0A84FF',
-        backgroundColor: gradient,
-        borderWidth: 2.5,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        pointBackgroundColor: '#0A84FF',
-        pointBorderColor: COLORS.cardBg,
-        pointBorderWidth: 2,
-        fill: true,
-        tension: 0,
-        segment: {
-          borderColor: (ctx) => {
-            const prev = ctx.p0.parsed.y;
-            const curr = ctx.p1.parsed.y;
-            return curr >= prev ? '#30D158' : '#FF375F';
-          }
+  const datasets = [
+    {
+      label: 'Daily Weight',
+      data: weights,
+      borderColor: '#0A84FF',
+      backgroundColor: gradient,
+      borderWidth: 2.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointBackgroundColor: '#0A84FF',
+      pointBorderColor: COLORS.cardBg,
+      pointBorderWidth: 2,
+      fill: true,
+      tension: 0,
+      segment: {
+        borderColor: (ctx) => {
+          const prev = ctx.p0.parsed.y;
+          const curr = ctx.p1.parsed.y;
+          return curr >= prev ? '#30D158' : '#FF375F';
         }
       }
-    ]},
+    }
+  ];
+
+  // Target weight goal line
+  const goalWeight = localStorage.getItem('bulk_goal_weight');
+  if (goalWeight) {
+    const target = parseFloat(goalWeight);
+    datasets.push({
+      label: 'Target',
+      data: labels.map(() => target),
+      borderColor: 'rgba(255, 159, 10, 0.8)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+      tension: 0,
+      spanGaps: true
+    });
+  }
+
+  weightChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
     options: chartOptions('lbs')
   });
 }
@@ -720,34 +736,62 @@ function renderErgChart() {
   const ctx = document.getElementById('erg-chart').getContext('2d');
   if (ergChart) { ergChart.destroy(); ergChart = null; }
 
-  ergChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets: [{
-      label: ergChartUnit === 'watts' ? 'Watts' : ergChartUnit === 'time' ? 'Total Time' : '500m Split',
-      data: values,
-      borderColor: COLORS.accent,
-      borderWidth: 2.5,
-      pointRadius: 5,
-      pointHoverRadius: 8,
-      pointBackgroundColor: (ctx) => {
-        const i = ctx.dataIndex;
-        if (i === 0) return COLORS.accent;
-        const isBest = higherIsBetter
-          ? values[i] >= Math.max(...values.slice(0, i+1))
-          : values[i] <= Math.min(...values.slice(0, i+1));
-        return isBest ? COLORS.green : COLORS.accent;
-      },
-      pointBorderColor: COLORS.cardBg,
-      pointBorderWidth: 2,
+  const ergDatasets = [{
+    label: ergChartUnit === 'watts' ? 'Watts' : ergChartUnit === 'time' ? 'Total Time' : '500m Split',
+    data: values,
+    borderColor: COLORS.accent,
+    borderWidth: 2.5,
+    pointRadius: 5,
+    pointHoverRadius: 8,
+    pointBackgroundColor: (ctx) => {
+      const i = ctx.dataIndex;
+      if (i === 0) return COLORS.accent;
+      const isBest = higherIsBetter
+        ? values[i] >= Math.max(...values.slice(0, i+1))
+        : values[i] <= Math.min(...values.slice(0, i+1));
+      return isBest ? COLORS.green : COLORS.accent;
+    },
+    pointBorderColor: COLORS.cardBg,
+    pointBorderWidth: 2,
+    fill: false,
+    tension: 0,
+    segment: {
+      borderColor: (ctx) => {
+        const i = ctx.p1DataIndex;
+        return segmentColors[i - 1] || COLORS.accent;
+      }
+    }
+  }];
+
+  // Target 2K goal line - convert to whatever unit is displayed
+  const goal2k = localStorage.getItem('bulk_goal_2k');
+  if (goal2k) {
+    const targetSec = parseFloat(goal2k); // stored as total 2K seconds
+    let targetValue;
+    if (ergChartUnit === 'watts') {
+      targetValue = +timeToWatts(targetSec).toFixed(1);
+    } else if (ergChartUnit === 'time') {
+      targetValue = +targetSec.toFixed(1);
+    } else {
+      targetValue = +toSplit(targetSec).toFixed(1);
+    }
+    ergDatasets.push({
+      label: 'Target',
+      data: labels.map(() => targetValue),
+      borderColor: 'rgba(255, 159, 10, 0.8)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      pointHoverRadius: 0,
       fill: false,
       tension: 0,
-      segment: {
-        borderColor: (ctx) => {
-          const i = ctx.p1DataIndex;
-          return segmentColors[i - 1] || COLORS.accent;
-        }
-      }
-    }]},
+      spanGaps: true
+    });
+  }
+
+  ergChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: ergDatasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -919,12 +963,16 @@ document.getElementById('goal-save').addEventListener('click', () => {
   localStorage.setItem('bulk_goal_weight', val);
   document.getElementById('goal-modal').classList.remove('active');
   updateHeroStats();
+  if (weightChart) { weightChart.destroy(); weightChart = null; }
+  renderWeightChart();
 });
 
 document.getElementById('goal-clear').addEventListener('click', () => {
   localStorage.removeItem('bulk_goal_weight');
   document.getElementById('goal-modal').classList.remove('active');
   updateHeroStats();
+  if (weightChart) { weightChart.destroy(); weightChart = null; }
+  renderWeightChart();
 });
 
 // ===================== 2K GOAL =====================
@@ -977,12 +1025,16 @@ document.getElementById('goal-2k-save').addEventListener('click', () => {
   localStorage.setItem('bulk_goal_2k', timeSec);
   document.getElementById('goal-2k-modal').classList.remove('active');
   updateHeroStats();
+  if (ergChart) { ergChart.destroy(); ergChart = null; }
+  renderErgChart();
 });
 
 document.getElementById('goal-2k-clear').addEventListener('click', () => {
   localStorage.removeItem('bulk_goal_2k');
   document.getElementById('goal-2k-modal').classList.remove('active');
   updateHeroStats();
+  if (ergChart) { ergChart.destroy(); ergChart = null; }
+  renderErgChart();
 });
 
 // ===================== KEYBOARD =====================
