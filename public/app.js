@@ -303,6 +303,107 @@ const editWeightInput = document.getElementById('edit-weight');
 
 dateInput.value = todayStr();
 
+// ===================== SWIPE TO DELETE =====================
+
+const SWIPE_THRESHOLD = 60; // px to reveal delete
+const SWIPE_MAX = 80; // px max reveal width
+
+function initSwipeRows(tbody) {
+  tbody.querySelectorAll('.swipe-content').forEach(el => {
+    let startX = 0, startY = 0, currentX = 0, isOpen = false, tracking = false, isHoriz = false;
+
+    const close = () => {
+      el.style.transform = 'translateX(0)';
+      isOpen = false;
+    };
+
+    const open = () => {
+      el.style.transform = `translateX(-${SWIPE_MAX}px)`;
+      isOpen = true;
+    };
+
+    el.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      currentX = 0;
+      tracking = true;
+      isHoriz = false;
+      el.style.transition = 'none';
+    }, { passive: true });
+
+    el.addEventListener('touchmove', (e) => {
+      if (!tracking) return;
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      if (!isHoriz) {
+        if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
+          isHoriz = true;
+        } else if (Math.abs(dy) > 10) {
+          tracking = false;
+          return;
+        }
+      }
+      if (!isHoriz) return;
+      currentX = dx;
+      let translate = isOpen ? -SWIPE_MAX + dx : dx;
+      if (translate > 0) translate = 0;
+      if (translate < -SWIPE_MAX) translate = -SWIPE_MAX + (translate + SWIPE_MAX) * 0.2; // rubber band
+      el.style.transform = `translateX(${translate}px)`;
+    }, { passive: true });
+
+    el.addEventListener('touchend', () => {
+      if (!tracking) return;
+      tracking = false;
+      el.style.transition = 'transform 0.25s ease';
+      if (isOpen) {
+        if (currentX > 20) close();
+        else open();
+      } else {
+        if (currentX < -SWIPE_THRESHOLD) open();
+        else close();
+      }
+    });
+
+    // Tap outside any open row to close it
+    el.addEventListener('click', (ev) => {
+      if (isOpen && !ev.target.closest('.swipe-delete')) {
+        ev.preventDefault();
+        close();
+      }
+    });
+  });
+
+  // Close any open rows when clicking elsewhere
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.swipe-content')) return;
+    tbody.querySelectorAll('.swipe-content').forEach(el => {
+      if (el.style.transform && el.style.transform !== 'translateX(0px)') {
+        el.style.transition = 'transform 0.25s ease';
+        el.style.transform = 'translateX(0)';
+      }
+    });
+  }, { once: true });
+}
+
+window.confirmDeleteRow = async function(btn) {
+  const row = btn.closest('.swipe-row');
+  if (!row) return;
+  const id = row.dataset.id;
+  const type = row.dataset.type;
+  if (!confirm('Delete this entry?')) return;
+  try {
+    const endpoint = type === 'weight' ? `/api/weights/${id}` : `/api/ergtimes/${id}`;
+    await authFetch(endpoint, { method: 'DELETE' });
+    if (type === 'weight') {
+      await fetchWeights();
+    } else {
+      await fetchErgTimes();
+    }
+  } catch (err) {
+    console.error('Delete failed:', err);
+  }
+};
+
 // Chart.js plugin: draws "Target" label above the target goal line
 const targetLabelPlugin = {
   id: 'targetLabel',
@@ -395,8 +496,9 @@ function renderWeightTable() {
       const cls = diff > 0 ? 'change-positive' : diff < 0 ? 'change-negative' : 'change-neutral';
       ch = `<span class="${cls}">${sign}${diff.toFixed(1)}</span>`;
     }
-    return `<tr><td>${formatDate(e.date)}</td><td>${e.weight.toFixed(1)}</td><td>${ch}</td><td><button class="btn-edit" onclick="openWeightEdit(${e.id},'${e.date}',${e.weight})">Edit</button></td></tr>`;
+    return `<tr class="swipe-row" data-id="${e.id}" data-type="weight" data-date="${e.date}" data-value="${e.weight}"><td colspan="4" class="swipe-cell"><div class="swipe-content"><div class="swipe-front"><span class="swipe-col swipe-col-date">${formatDate(e.date)}</span><span class="swipe-col swipe-col-main">${e.weight.toFixed(1)}</span><span class="swipe-col swipe-col-change">${ch}</span><button class="btn-edit" onclick="event.stopPropagation();openWeightEdit(${e.id},'${e.date}',${e.weight})">Edit</button></div><button type="button" class="swipe-delete" onclick="event.stopPropagation();confirmDeleteRow(this)">Delete</button></div></td></tr>`;
   }).join('');
+  initSwipeRows(weightTableBody);
 }
 
 function renderWeightChart() {
@@ -784,8 +886,9 @@ function renderErgTable() {
       }
     }
 
-    return `<tr><td>${formatDate(e.date)}${prBadge}</td><td>${fmtTime(e.time_seconds)}</td><td>${metricVal}</td><td>${ch}</td><td><button class="btn-edit" onclick="openErgEdit(${e.id},'${e.date}',${e.time_seconds})">Edit</button></td></tr>`;
+    return `<tr class="swipe-row" data-id="${e.id}" data-type="erg"><td colspan="5" class="swipe-cell"><div class="swipe-content"><div class="swipe-front"><span class="swipe-col swipe-col-date">${formatDate(e.date)}${prBadge}</span><span class="swipe-col swipe-col-main">${fmtTime(e.time_seconds)}</span><span class="swipe-col swipe-col-metric">${metricVal}</span><span class="swipe-col swipe-col-change">${ch}</span><button class="btn-edit" onclick="event.stopPropagation();openErgEdit(${e.id},'${e.date}',${e.time_seconds})">Edit</button></div><button type="button" class="swipe-delete" onclick="event.stopPropagation();confirmDeleteRow(this)">Delete</button></div></td></tr>`;
   }).join('');
+  initSwipeRows(ergTableBody);
 }
 
 function renderErgChart() {
