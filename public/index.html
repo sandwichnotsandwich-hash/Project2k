@@ -85,7 +85,7 @@
     <section class="card entry-card">
       <div class="card-header">
         <h2>Weigh In</h2>
-        <div class="wkg-badge"><span class="wkg-badge-label">W/KG</span><span class="wkg-badge-value">—</span></div>
+        <button type="button" class="wkg-badge" onclick="openWkgModal()"><span class="wkg-badge-label">W/KG</span><span class="wkg-badge-value">—</span></button>
       </div>
       <form id="weight-form">
         <div class="form-row">
@@ -150,7 +150,7 @@
     <section class="card entry-card">
       <div class="card-header">
         <h2>Log 2K</h2>
-        <div class="wkg-badge"><span class="wkg-badge-label">W/KG</span><span class="wkg-badge-value">—</span></div>
+        <button type="button" class="wkg-badge" onclick="openWkgModal()"><span class="wkg-badge-label">W/KG</span><span class="wkg-badge-value">—</span></button>
       </div>
       <form id="erg-form">
         <div class="form-row">
@@ -298,6 +298,36 @@
         <button type="button" class="btn-primary" id="goal-2k-save">Save</button>
       </div>
       <button type="button" class="btn-delete" id="goal-2k-clear">Clear Goal</button>
+    </div>
+  </div>
+
+  <!-- W/KG Breakdown Modal -->
+  <div class="modal-overlay" id="wkg-modal">
+    <div class="modal">
+      <h3>Watts per Kilogram</h3>
+      <div class="wkg-breakdown" id="wkg-breakdown">
+        <div class="wkg-row">
+          <span class="wkg-row-label">Latest 2K</span>
+          <span class="wkg-row-value" id="wkg-row-time">—</span>
+        </div>
+        <div class="wkg-row">
+          <span class="wkg-row-label">Avg Watts</span>
+          <span class="wkg-row-value" id="wkg-row-watts">—</span>
+        </div>
+        <div class="wkg-row">
+          <span class="wkg-row-label">Latest Weight</span>
+          <span class="wkg-row-value" id="wkg-row-weight">—</span>
+        </div>
+        <div class="wkg-divider"></div>
+        <div class="wkg-row wkg-row-result">
+          <span class="wkg-row-label">Watts ÷ Kg</span>
+          <span class="wkg-row-value accent" id="wkg-row-result">—</span>
+        </div>
+      </div>
+      <p class="wkg-explain">Watts per kilogram is a benchmark of power-to-weight. The higher the number, the more efficient your body is at putting out power on the erg.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-primary" onclick="document.getElementById('wkg-modal').classList.remove('active')">Got It</button>
+      </div>
     </div>
   </div>
 

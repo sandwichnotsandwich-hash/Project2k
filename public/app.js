@@ -237,9 +237,40 @@ function updateHeroStats() {
     const weightKg = latestWeight * 0.453592;
     const watts = timeToWatts(latestErg);
     wkgVal = (watts / weightKg).toFixed(2);
+    // Stash raw values for the breakdown modal
+    window._wkgBreakdown = {
+      watts: watts.toFixed(0),
+      kg: weightKg.toFixed(1),
+      lbs: latestWeight.toFixed(1),
+      ergTime: fmtTime(latestErg),
+      wkg: wkgVal
+    };
+  } else {
+    window._wkgBreakdown = null;
   }
   document.querySelectorAll('.wkg-badge-value').forEach(el => { el.textContent = wkgVal; });
 }
+
+document.getElementById('wkg-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'wkg-modal') e.target.classList.remove('active');
+});
+
+window.openWkgModal = function() {
+  const data = window._wkgBreakdown;
+  const modal = document.getElementById('wkg-modal');
+  if (!data) {
+    document.getElementById('wkg-row-time').textContent = '—';
+    document.getElementById('wkg-row-watts').textContent = '—';
+    document.getElementById('wkg-row-weight').textContent = '—';
+    document.getElementById('wkg-row-result').textContent = '—';
+  } else {
+    document.getElementById('wkg-row-time').textContent = data.ergTime;
+    document.getElementById('wkg-row-watts').textContent = data.watts + ' W';
+    document.getElementById('wkg-row-weight').textContent = data.lbs + ' lbs (' + data.kg + ' kg)';
+    document.getElementById('wkg-row-result').textContent = data.wkg;
+  }
+  modal.classList.add('active');
+};
 
 // ===================== TAB SWITCHING =====================
 
