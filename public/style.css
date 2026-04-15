@@ -1042,6 +1042,37 @@ footer {
   margin-bottom: 4px;
 }
 
+.menu-contact {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--separator);
+}
+
+.menu-contact-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8E8E93;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.menu-contact-line {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.menu-contact-link {
+  color: #0A84FF;
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+
+.menu-contact-link:hover {
+  opacity: 0.8;
+}
+
 .menu-ig {
   display: flex;
   justify-content: center;
