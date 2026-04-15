@@ -272,6 +272,28 @@ const editWeightInput = document.getElementById('edit-weight');
 
 dateInput.value = todayStr();
 
+// Chart.js plugin: draws "Target" label above the target goal line
+const targetLabelPlugin = {
+  id: 'targetLabel',
+  afterDatasetsDraw(chart) {
+    const targetDs = chart.data.datasets.find(d => d.label === 'Target');
+    if (!targetDs || !targetDs.data.length) return;
+    const targetValue = targetDs.data[0];
+    const yScale = chart.scales.y;
+    if (!yScale) return;
+    const y = yScale.getPixelForValue(targetValue);
+    const xRight = chart.chartArea.right;
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.fillStyle = '#FF9F0A';
+    ctx.font = '600 10px -apple-system, Helvetica Neue, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('TARGET', xRight - 4, y - 4);
+    ctx.restore();
+  }
+};
+
 async function fetchGoals() {
   try {
     const res = await authFetch('/api/goals');
@@ -412,10 +434,17 @@ function renderWeightChart() {
     });
   }
 
+  const wOpts = chartOptions('lbs');
+  // Make sure target line isn't flush with top/bottom
+  wOpts.scales = wOpts.scales || {};
+  wOpts.scales.y = wOpts.scales.y || {};
+  wOpts.scales.y.grace = '15%';
+
   weightChart = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
-    options: chartOptions('lbs')
+    options: wOpts,
+    plugins: [targetLabelPlugin]
   });
 }
 
@@ -862,6 +891,7 @@ function renderErgChart() {
         },
         y: {
           reverse: false,
+          grace: '15%',
           grid: { color: COLORS.grid, drawTicks: false },
           border: { color: COLORS.border },
           ticks: {
@@ -872,7 +902,8 @@ function renderErgChart() {
           }
         }
       }
-    }
+    },
+    plugins: [targetLabelPlugin]
   });
 }
 
