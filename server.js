@@ -26,9 +26,17 @@ async function initDB() {
       email TEXT NOT NULL,
       name TEXT,
       picture TEXT,
+      goal_weight REAL,
+      goal_2k REAL,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+
+  // Migration: add goal columns if missing
+  try {
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS goal_weight REAL`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS goal_2k REAL`);
+  } catch (e) { /* ignore */ }
 
   // Weights table (with user_id)
   await pool.query(`
@@ -147,6 +155,22 @@ app.get('/api/auth/me', requireAuth, async (req, res) => {
   const { rows } = await pool.query('SELECT id, name, email, picture FROM users WHERE id = $1', [req.userId]);
   if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
   res.json(rows[0]);
+});
+
+// ---- Goals API ----
+app.get('/api/goals', requireAuth, async (req, res) => {
+  const { rows } = await pool.query('SELECT goal_weight, goal_2k FROM users WHERE id = $1', [req.userId]);
+  if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
+  res.json(rows[0]);
+});
+
+app.put('/api/goals', requireAuth, async (req, res) => {
+  const { goal_weight, goal_2k } = req.body;
+  await pool.query(
+    'UPDATE users SET goal_weight = $1, goal_2k = $2 WHERE id = $3',
+    [goal_weight ?? null, goal_2k ?? null, req.userId]
+  );
+  res.json({ success: true });
 });
 
 // ---- Weight API ----

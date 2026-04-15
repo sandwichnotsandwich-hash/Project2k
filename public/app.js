@@ -48,6 +48,7 @@ window.handleGoogleSignIn = async function(response) {
     if (data.token) {
       setAuth(data.token, data.user);
       showApp();
+      fetchGoals();
       fetchWeights();
       fetchErgTimes();
     } else {
@@ -270,6 +271,42 @@ const editDateDisplay = document.getElementById('edit-date-display');
 const editWeightInput = document.getElementById('edit-weight');
 
 dateInput.value = todayStr();
+
+async function fetchGoals() {
+  try {
+    const res = await authFetch('/api/goals');
+    const { goal_weight, goal_2k } = await res.json();
+    // If server has no goals but we have them locally, push local up to server
+    const localW = localStorage.getItem('bulk_goal_weight');
+    const localE = localStorage.getItem('bulk_goal_2k');
+    if (goal_weight == null && goal_2k == null && (localW || localE)) {
+      await saveGoalsToServer();
+    } else {
+      if (goal_weight != null) localStorage.setItem('bulk_goal_weight', goal_weight);
+      else localStorage.removeItem('bulk_goal_weight');
+      if (goal_2k != null) localStorage.setItem('bulk_goal_2k', goal_2k);
+      else localStorage.removeItem('bulk_goal_2k');
+    }
+    updateHeroStats();
+    if (typeof weightChart !== 'undefined' && weightChart) { weightChart.destroy(); weightChart = null; renderWeightChart(); }
+    if (typeof ergChart !== 'undefined' && ergChart) { ergChart.destroy(); ergChart = null; renderErgChart(); }
+  } catch (err) { console.error('Failed to fetch goals:', err); }
+}
+
+async function saveGoalsToServer() {
+  const gw = localStorage.getItem('bulk_goal_weight');
+  const g2k = localStorage.getItem('bulk_goal_2k');
+  try {
+    await authFetch('/api/goals', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        goal_weight: gw ? parseFloat(gw) : null,
+        goal_2k: g2k ? parseFloat(g2k) : null
+      })
+    });
+  } catch (err) { console.error('Failed to save goals:', err); }
+}
 
 async function fetchWeights() {
   weightEntries = await (await authFetch('/api/weights')).json();
@@ -965,6 +1002,7 @@ document.getElementById('goal-save').addEventListener('click', () => {
   updateHeroStats();
   if (weightChart) { weightChart.destroy(); weightChart = null; }
   renderWeightChart();
+  saveGoalsToServer();
 });
 
 document.getElementById('goal-clear').addEventListener('click', () => {
@@ -973,6 +1011,7 @@ document.getElementById('goal-clear').addEventListener('click', () => {
   updateHeroStats();
   if (weightChart) { weightChart.destroy(); weightChart = null; }
   renderWeightChart();
+  saveGoalsToServer();
 });
 
 // ===================== 2K GOAL =====================
@@ -1027,6 +1066,7 @@ document.getElementById('goal-2k-save').addEventListener('click', () => {
   updateHeroStats();
   if (ergChart) { ergChart.destroy(); ergChart = null; }
   renderErgChart();
+  saveGoalsToServer();
 });
 
 document.getElementById('goal-2k-clear').addEventListener('click', () => {
@@ -1035,6 +1075,7 @@ document.getElementById('goal-2k-clear').addEventListener('click', () => {
   updateHeroStats();
   if (ergChart) { ergChart.destroy(); ergChart = null; }
   renderErgChart();
+  saveGoalsToServer();
 });
 
 // ===================== KEYBOARD =====================
@@ -1078,6 +1119,7 @@ initGoogleSignIn();
 
 if (isLoggedIn()) {
   showApp();
+  fetchGoals();
   fetchWeights();
   fetchErgTimes();
 } else {
