@@ -224,37 +224,10 @@ function updateHeroStats() {
     best2k = fmtTime(best);
   }
 
-  // Bottom row: Target LBS, Target Weekly, Target 2K
+  // Target values now live in card-header badges, not the hero
   const goalWeight = localStorage.getItem('bulk_goal_weight');
   const goalWeeklyErg = localStorage.getItem('bulk_goal_weekly_erg');
   const goal2k = localStorage.getItem('bulk_goal_2k');
-
-  let targetW, targetWeekly, target2k;
-
-  if (goalWeight) {
-    const goalClass = weightEntries.length > 0 && weightEntries[weightEntries.length - 1].weight >= parseFloat(goalWeight) ? 'goal-reached' : '';
-    targetW = `<div class="hero-stat hero-stat-goal ${goalClass}" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value">${parseFloat(goalWeight).toFixed(0)}</span><span class="hero-stat-label">Target lbs</span></div>`;
-  } else {
-    targetW = `<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Target lbs</span></div>`;
-  }
-
-  if (goalWeeklyErg) {
-    const goalClass = weekMins >= parseFloat(goalWeeklyErg) ? 'goal-reached' : '';
-    targetWeekly = `<div class="hero-stat hero-stat-goal ${goalClass}" onclick="document.getElementById('goal-weekly-erg-modal').classList.add('active')"><span class="hero-stat-value">${Math.round(parseFloat(goalWeeklyErg))}</span><span class="hero-stat-label">Target Weekly</span></div>`;
-  } else {
-    targetWeekly = `<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-weekly-erg-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Target Weekly</span></div>`;
-  }
-
-  if (goal2k) {
-    const goalClass2k = ergEntries.length > 0 && Math.min(...ergEntries.map(e => e.time_seconds)) <= parseFloat(goal2k) ? 'goal-reached' : '';
-    const g2kSec = parseFloat(goal2k);
-    const g2kMin = Math.floor(g2kSec / 60);
-    const g2kS = Math.round(g2kSec % 60);
-    const g2kDisplay = `${g2kMin}:${g2kS < 10 ? '0' : ''}${g2kS}`;
-    target2k = `<div class="hero-stat hero-stat-goal ${goalClass2k}" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value">${g2kDisplay}</span><span class="hero-stat-label">Target 2K</span></div>`;
-  } else {
-    target2k = `<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Target 2K</span></div>`;
-  }
 
   statsEl.innerHTML = `
     <div class="hero-stats-row">
@@ -262,12 +235,51 @@ function updateHeroStats() {
       <div class="hero-stat"><span class="hero-stat-value">${weekDisplay}</span><span class="hero-stat-label">This Week</span></div>
       <div class="hero-stat"><span class="hero-stat-value">${best2k}</span><span class="hero-stat-label">2K PR</span></div>
     </div>
-    <div class="hero-stats-row">
-      ${targetW}
-      ${targetWeekly}
-      ${target2k}
-    </div>
   `;
+
+  // Update card-header target badges
+  const setGoalBadge = (id, value, reached, display) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('goal-reached', !!reached);
+    const valEl = el.querySelector('.goal-badge-value');
+    if (!valEl) return;
+    if (value == null) {
+      valEl.textContent = 'Set';
+      valEl.classList.add('goal-unset');
+    } else {
+      valEl.textContent = display;
+      valEl.classList.remove('goal-unset');
+    }
+  };
+
+  setGoalBadge(
+    'goal-weight-badge',
+    goalWeight,
+    goalWeight && weightEntries.length > 0 && weightEntries[weightEntries.length - 1].weight >= parseFloat(goalWeight),
+    goalWeight ? parseFloat(goalWeight).toFixed(0) : ''
+  );
+
+  setGoalBadge(
+    'goal-weekly-erg-badge',
+    goalWeeklyErg,
+    goalWeeklyErg && weekMins >= parseFloat(goalWeeklyErg),
+    goalWeeklyErg ? Math.round(parseFloat(goalWeeklyErg)) + '' : ''
+  );
+
+  let g2kDisplay = '';
+  if (goal2k) {
+    const s = parseFloat(goal2k);
+    const m = Math.floor(s / 60);
+    const sec = Math.round(s % 60);
+    g2kDisplay = `${m}:${sec < 10 ? '0' : ''}${sec}`;
+  }
+  setGoalBadge(
+    'goal-2k-badge',
+    goal2k,
+    goal2k && ergEntries.length > 0 && Math.min(...ergEntries.map(e => e.time_seconds)) <= parseFloat(goal2k),
+    g2kDisplay
+  );
 
   // Update W/KG badges on cards
   let wkgVal = '—';
