@@ -182,7 +182,7 @@ body {
 
 .hero-stats-row {
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
   align-items: stretch;
 }
 
@@ -228,8 +228,8 @@ body {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   border: 1.5px solid rgba(10, 132, 255, 0.4);
-  border-radius: 10px;
-  padding: 6px 12px;
+  border-radius: 12px;
+  padding: 10px 0;
 }
 
 .hero-stat-goal .hero-stat-value {
