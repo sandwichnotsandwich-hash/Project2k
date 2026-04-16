@@ -252,7 +252,7 @@ app.delete('/api/ergtimes/:id', requireAuth, async (req, res) => {
 // Start server
 initDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`PR2K is running on port ${PORT}`);
+    console.log(`Project2k is running on port ${PORT}`);
   });
 }).catch(err => {
   console.error('Failed to initialize database:', err);
