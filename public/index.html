@@ -75,6 +75,7 @@
     <nav class="tab-nav">
       <div class="tab-nav-inner">
         <button class="tab-btn active" data-tab="weight">Weight</button>
+        <button class="tab-btn" data-tab="practice">Erg Practice</button>
         <button class="tab-btn" data-tab="erg">2K Time</button>
       </div>
     </nav>
@@ -142,6 +143,70 @@
         </table>
       </div>
       <p class="table-empty" id="table-empty">No entries yet. Start tracking to see your history.</p>
+    </section>
+  </main>
+
+  <!-- ==================== ERG PRACTICE TAB ==================== -->
+  <main class="container tab-content" id="tab-practice">
+    <section class="card entry-card">
+      <div class="card-header">
+        <h2>Log Erg Time</h2>
+      </div>
+      <form id="practice-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="practice-date-input">Date</label>
+            <input type="date" id="practice-date-input" required>
+          </div>
+          <div class="form-group">
+            <label for="practice-mins-input">Minutes</label>
+            <input type="text" id="practice-mins-input" placeholder="0" inputmode="numeric" maxlength="4" required>
+          </div>
+        </div>
+        <button type="submit" id="practice-submit-btn">
+          <span>Log Practice</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+      <p id="practice-form-message" class="form-message"></p>
+    </section>
+
+    <section class="card chart-card">
+      <div class="card-header">
+        <h2>Practice Trend</h2>
+      </div>
+      <div class="timeline-toggle" id="practice-timeline">
+        <button type="button" class="tl-btn" data-range="7">1W</button>
+        <button type="button" class="tl-btn" data-range="30">1M</button>
+        <button type="button" class="tl-btn" data-range="90">3M</button>
+        <button type="button" class="tl-btn" data-range="180">6M</button>
+        <button type="button" class="tl-btn" data-range="365">1Y</button>
+        <button type="button" class="tl-btn active" data-range="all">All</button>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="practice-chart"></canvas>
+      </div>
+      <p class="chart-empty" id="practice-chart-empty">Log your first session to see your practice trend.</p>
+    </section>
+
+    <section class="card table-card">
+      <div class="card-header">
+        <h2>History</h2>
+      </div>
+      <div class="table-wrapper">
+        <table id="practice-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Total Mins</th>
+              <th>Sessions</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="practice-table-body"></tbody>
+        </table>
+      </div>
+      <p class="table-empty" id="practice-table-empty">No entries yet.</p>
     </section>
   </main>
 
@@ -328,6 +393,22 @@
       <div class="modal-actions">
         <button type="button" class="btn-primary" onclick="document.getElementById('wkg-modal').classList.remove('active')">Got It</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Weekly Erg Goal Modal -->
+  <div class="modal-overlay" id="goal-weekly-erg-modal">
+    <div class="modal">
+      <h3>Weekly Erg Target</h3>
+      <div class="form-group">
+        <label for="goal-weekly-erg-input">Target Minutes Per Week</label>
+        <input type="number" id="goal-weekly-erg-input" step="1" min="1" max="5000" placeholder="300">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="goal-weekly-erg-cancel">Cancel</button>
+        <button type="button" class="btn-primary" id="goal-weekly-erg-save">Save</button>
+      </div>
+      <button type="button" class="btn-delete" id="goal-weekly-erg-clear">Clear Target</button>
     </div>
   </div>
 

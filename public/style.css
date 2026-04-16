@@ -177,11 +177,18 @@ body {
 .hero-fade { display: none; }
 
 .hero-stats {
-  display: flex;
-  gap: 12px;
   margin-top: 16px;
-  flex-wrap: wrap;
+}
+
+.hero-stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
   align-items: stretch;
+}
+
+.hero-stats-row + .hero-stats-row {
+  margin-top: 8px;
 }
 
 .hero-stat {
@@ -372,14 +379,16 @@ body {
   border: 1px solid var(--separator);
   color: var(--text-secondary);
   font-family: var(--font);
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  padding: 12px 16px;
+  padding: 10px 8px;
   cursor: pointer;
   border-radius: 12px;
   transition: all var(--transition);
   text-transform: none;
   letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .tab-btn:hover {

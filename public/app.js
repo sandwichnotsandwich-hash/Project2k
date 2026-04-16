@@ -50,6 +50,7 @@ window.handleGoogleSignIn = async function(response) {
       showApp();
       fetchGoals();
       fetchWeights();
+      fetchPractice();
       fetchErgTimes();
     } else {
       alert('Sign in failed. Please try again.');
@@ -188,46 +189,85 @@ document.querySelectorAll('#erg-timeline .tl-btn').forEach(btn => {
 
 // ===================== HERO STATS =====================
 
+function getCurrentWeekMins() {
+  // Get current calendar week total (Mon-Sun)
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun, 1=Mon...
+  const mondayOffset = day === 0 ? 6 : day - 1;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - mondayOffset);
+  monday.setHours(0,0,0,0);
+  const mondayStr = `${monday.getFullYear()}-${String(monday.getMonth()+1).padStart(2,'0')}-${String(monday.getDate()).padStart(2,'0')}`;
+  const sundayEnd = new Date(monday);
+  sundayEnd.setDate(monday.getDate() + 6);
+  const sundayStr = `${sundayEnd.getFullYear()}-${String(sundayEnd.getMonth()+1).padStart(2,'0')}-${String(sundayEnd.getDate()).padStart(2,'0')}`;
+  let total = 0;
+  if (typeof practiceEntries !== 'undefined') {
+    practiceEntries.forEach(e => {
+      if (e.date >= mondayStr && e.date <= sundayStr) total += e.minutes;
+    });
+  }
+  return Math.round(total);
+}
+
 function updateHeroStats() {
   const statsEl = document.getElementById('hero-stats');
-  const parts = [];
 
-  // 1. Current Weight
+  // Top row: Current Weight, Current Week, 2K PR
   const currentW = weightEntries.length > 0 ? weightEntries[weightEntries.length - 1].weight.toFixed(1) : '—';
-  parts.push(`<div class="hero-stat"><span class="hero-stat-value">${currentW}</span><span class="hero-stat-label">Current lbs</span></div>`);
-
-  // 2. Weight Goal
-  const goalWeight = localStorage.getItem('bulk_goal_weight');
-  if (goalWeight) {
-    const goalClass = weightEntries.length > 0 && weightEntries[weightEntries.length - 1].weight >= parseFloat(goalWeight) ? 'goal-reached' : '';
-    parts.push(`<div class="hero-stat hero-stat-goal ${goalClass}" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value">${parseFloat(goalWeight).toFixed(0)}</span><span class="hero-stat-label">Target lbs</span></div>`);
-  } else {
-    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Target lbs</span></div>`);
-  }
-
-  // 3. 2K PR
+  const weekMins = getCurrentWeekMins();
+  const weekDisplay = weekMins > 0 ? weekMins + '' : '—';
   let best2k = '—';
   if (ergEntries.length > 0) {
     let best = Infinity;
     ergEntries.forEach(e => { if (e.time_seconds < best) best = e.time_seconds; });
     best2k = fmtTime(best);
   }
-  parts.push(`<div class="hero-stat"><span class="hero-stat-value">${best2k}</span><span class="hero-stat-label">2K PR</span></div>`);
 
-  // 4. Target 2K
+  // Bottom row: Target LBS, Target Weekly, Target 2K
+  const goalWeight = localStorage.getItem('bulk_goal_weight');
+  const goalWeeklyErg = localStorage.getItem('bulk_goal_weekly_erg');
   const goal2k = localStorage.getItem('bulk_goal_2k');
+
+  let targetW, targetWeekly, target2k;
+
+  if (goalWeight) {
+    const goalClass = weightEntries.length > 0 && weightEntries[weightEntries.length - 1].weight >= parseFloat(goalWeight) ? 'goal-reached' : '';
+    targetW = `<div class="hero-stat hero-stat-goal ${goalClass}" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value">${parseFloat(goalWeight).toFixed(0)}</span><span class="hero-stat-label">Target lbs</span></div>`;
+  } else {
+    targetW = `<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Target lbs</span></div>`;
+  }
+
+  if (goalWeeklyErg) {
+    const goalClass = weekMins >= parseFloat(goalWeeklyErg) ? 'goal-reached' : '';
+    targetWeekly = `<div class="hero-stat hero-stat-goal ${goalClass}" onclick="document.getElementById('goal-weekly-erg-modal').classList.add('active')"><span class="hero-stat-value">${Math.round(parseFloat(goalWeeklyErg))}</span><span class="hero-stat-label">Target Weekly</span></div>`;
+  } else {
+    targetWeekly = `<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-weekly-erg-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Target Weekly</span></div>`;
+  }
+
   if (goal2k) {
     const goalClass2k = ergEntries.length > 0 && Math.min(...ergEntries.map(e => e.time_seconds)) <= parseFloat(goal2k) ? 'goal-reached' : '';
     const g2kSec = parseFloat(goal2k);
     const g2kMin = Math.floor(g2kSec / 60);
     const g2kS = Math.round(g2kSec % 60);
     const g2kDisplay = `${g2kMin}:${g2kS < 10 ? '0' : ''}${g2kS}`;
-    parts.push(`<div class="hero-stat hero-stat-goal ${goalClass2k}" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value">${g2kDisplay}</span><span class="hero-stat-label">Target 2K</span></div>`);
+    target2k = `<div class="hero-stat hero-stat-goal ${goalClass2k}" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value">${g2kDisplay}</span><span class="hero-stat-label">Target 2K</span></div>`;
   } else {
-    parts.push(`<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Target 2K</span></div>`);
+    target2k = `<div class="hero-stat hero-stat-goal" onclick="document.getElementById('goal-2k-modal').classList.add('active')"><span class="hero-stat-value goal-unset">Set</span><span class="hero-stat-label">Target 2K</span></div>`;
   }
 
-  statsEl.innerHTML = parts.join('');
+  statsEl.innerHTML = `
+    <div class="hero-stats-row">
+      <div class="hero-stat"><span class="hero-stat-value">${currentW}</span><span class="hero-stat-label">Current lbs</span></div>
+      <div class="hero-stat"><span class="hero-stat-value">${weekDisplay}</span><span class="hero-stat-label">This Week</span></div>
+      <div class="hero-stat"><span class="hero-stat-value">${best2k}</span><span class="hero-stat-label">2K PR</span></div>
+    </div>
+    <div class="hero-stats-row">
+      ${targetW}
+      ${targetWeekly}
+      ${target2k}
+    </div>
+  `;
 
   // Update W/KG badges on cards
   let wkgVal = '—';
@@ -328,34 +368,39 @@ const targetLabelPlugin = {
 async function fetchGoals() {
   try {
     const res = await authFetch('/api/goals');
-    const { goal_weight, goal_2k } = await res.json();
-    // If server has no goals but we have them locally, push local up to server
+    const { goal_weight, goal_2k, goal_weekly_erg } = await res.json();
     const localW = localStorage.getItem('bulk_goal_weight');
     const localE = localStorage.getItem('bulk_goal_2k');
-    if (goal_weight == null && goal_2k == null && (localW || localE)) {
+    const localP = localStorage.getItem('bulk_goal_weekly_erg');
+    if (goal_weight == null && goal_2k == null && goal_weekly_erg == null && (localW || localE || localP)) {
       await saveGoalsToServer();
     } else {
       if (goal_weight != null) localStorage.setItem('bulk_goal_weight', goal_weight);
       else localStorage.removeItem('bulk_goal_weight');
       if (goal_2k != null) localStorage.setItem('bulk_goal_2k', goal_2k);
       else localStorage.removeItem('bulk_goal_2k');
+      if (goal_weekly_erg != null) localStorage.setItem('bulk_goal_weekly_erg', goal_weekly_erg);
+      else localStorage.removeItem('bulk_goal_weekly_erg');
     }
     updateHeroStats();
     if (typeof weightChart !== 'undefined' && weightChart) { weightChart.destroy(); weightChart = null; renderWeightChart(); }
     if (typeof ergChart !== 'undefined' && ergChart) { ergChart.destroy(); ergChart = null; renderErgChart(); }
+    if (typeof practiceChart !== 'undefined' && practiceChart) { practiceChart.destroy(); practiceChart = null; renderPracticeChart(); }
   } catch (err) { console.error('Failed to fetch goals:', err); }
 }
 
 async function saveGoalsToServer() {
   const gw = localStorage.getItem('bulk_goal_weight');
   const g2k = localStorage.getItem('bulk_goal_2k');
+  const gwe = localStorage.getItem('bulk_goal_weekly_erg');
   try {
     await authFetch('/api/goals', {
       method: 'PUT',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         goal_weight: gw ? parseFloat(gw) : null,
-        goal_2k: g2k ? parseFloat(g2k) : null
+        goal_2k: g2k ? parseFloat(g2k) : null,
+        goal_weekly_erg: gwe ? parseFloat(gwe) : null
       })
     });
   } catch (err) { console.error('Failed to save goals:', err); }
@@ -1133,6 +1178,206 @@ document.getElementById('goal-2k-clear').addEventListener('click', () => {
   saveGoalsToServer();
 });
 
+// ===================== ERG PRACTICE TAB =====================
+
+let practiceEntries = [];
+let practiceChart = null;
+let practiceRange = 'all';
+
+const practiceForm = document.getElementById('practice-form');
+const practiceDateInput = document.getElementById('practice-date-input');
+const practiceMinsInput = document.getElementById('practice-mins-input');
+const practiceMsg = document.getElementById('practice-form-message');
+const practiceTableBody = document.getElementById('practice-table-body');
+const practiceTableEmpty = document.getElementById('practice-table-empty');
+const practiceChartEmpty = document.getElementById('practice-chart-empty');
+
+if (practiceDateInput) practiceDateInput.value = todayStr();
+
+// Only allow digits in minutes input
+if (practiceMinsInput) {
+  practiceMinsInput.addEventListener('keydown', function(e) {
+    if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+    if (!/^\d$/.test(e.key)) { e.preventDefault(); }
+  });
+}
+
+async function fetchPractice() {
+  try {
+    practiceEntries = await (await authFetch('/api/ergpractice')).json();
+  } catch (e) { practiceEntries = []; }
+  renderPracticeTable();
+  renderPracticeChart();
+  updateHeroStats();
+}
+
+if (practiceForm) {
+  practiceForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const date = practiceDateInput.value;
+    const minutes = parseInt(practiceMinsInput.value);
+    if (!date || isNaN(minutes) || minutes <= 0) return showMsg(practiceMsg, 'Enter a valid date and minutes.', 'error');
+    try {
+      await authFetch('/api/ergpractice', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ date, minutes }) });
+      await fetchPractice();
+      showMsg(practiceMsg, 'Practice logged!', 'success');
+      practiceMinsInput.value = '';
+      practiceDateInput.value = todayStr();
+    } catch (err) { showMsg(practiceMsg, err.message, 'error'); }
+  });
+}
+
+function getPracticeDailyTotals() {
+  // Group by date, sum minutes, count sessions
+  const byDate = {};
+  practiceEntries.forEach(e => {
+    if (!byDate[e.date]) byDate[e.date] = { date: e.date, total: 0, sessions: 0, ids: [] };
+    byDate[e.date].total += e.minutes;
+    byDate[e.date].sessions += 1;
+    byDate[e.date].ids.push(e.id);
+  });
+  return Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function renderPracticeTable() {
+  const daily = getPracticeDailyTotals();
+  if (!daily.length) { practiceTableEmpty.style.display = 'block'; practiceTableBody.innerHTML = ''; return; }
+  practiceTableEmpty.style.display = 'none';
+  const rev = [...daily].reverse();
+  practiceTableBody.innerHTML = rev.map(d => {
+    return `<tr><td>${formatDate(d.date)}</td><td>${Math.round(d.total)} min</td><td>${d.sessions}</td><td><button class="btn-edit" onclick="deletePracticeDay('${d.date}')">Delete</button></td></tr>`;
+  }).join('');
+}
+
+window.deletePracticeDay = async function(date) {
+  if (!confirm('Delete all practice entries for ' + formatDate(date) + '?')) return;
+  const toDelete = practiceEntries.filter(e => e.date === date);
+  for (const e of toDelete) {
+    await authFetch(`/api/ergpractice/${e.id}`, { method: 'DELETE' });
+  }
+  await fetchPractice();
+};
+
+function renderPracticeChart() {
+  const daily = getPracticeDailyTotals();
+  if (!daily.length) {
+    practiceChartEmpty.style.display = 'block';
+    if (practiceChart) { practiceChart.destroy(); practiceChart = null; }
+    return;
+  }
+  practiceChartEmpty.style.display = 'none';
+  const filtered = filterByRange(daily, practiceRange);
+  if (!filtered.length) {
+    practiceChartEmpty.style.display = 'block';
+    practiceChartEmpty.textContent = 'No data in this range.';
+    if (practiceChart) { practiceChart.destroy(); practiceChart = null; }
+    return;
+  }
+
+  const labels = filtered.map(d => shortDate(d.date));
+  const values = filtered.map(d => Math.round(d.total));
+
+  if (practiceChart) { practiceChart.destroy(); practiceChart = null; }
+
+  const ctx = document.getElementById('practice-chart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+  gradient.addColorStop(0, 'rgba(10, 132, 255, 0.2)');
+  gradient.addColorStop(1, 'rgba(10, 132, 255, 0)');
+
+  const datasets = [{
+    label: 'Practice',
+    data: values,
+    borderColor: '#0A84FF',
+    backgroundColor: gradient,
+    borderWidth: 2.5,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    pointBackgroundColor: '#0A84FF',
+    pointBorderColor: COLORS.cardBg,
+    pointBorderWidth: 2,
+    fill: true,
+    tension: 0,
+    segment: {
+      borderColor: (ctx) => {
+        const prev = ctx.p0.parsed.y;
+        const curr = ctx.p1.parsed.y;
+        return curr >= prev ? '#30D158' : '#FF375F';
+      }
+    }
+  }];
+
+  // Target weekly line (show as daily average = weekly target / 7)
+  const goalWeeklyErg = localStorage.getItem('bulk_goal_weekly_erg');
+  if (goalWeeklyErg) {
+    const dailyTarget = parseFloat(goalWeeklyErg) / 7;
+    datasets.push({
+      label: 'Target',
+      data: labels.map(() => +dailyTarget.toFixed(0)),
+      borderColor: 'rgba(255, 159, 10, 0.8)',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+      tension: 0,
+      spanGaps: true
+    });
+  }
+
+  const pOpts = chartOptions('min');
+  pOpts.scales = pOpts.scales || {};
+  pOpts.scales.y = pOpts.scales.y || {};
+  pOpts.scales.y.grace = '15%';
+
+  practiceChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: pOpts,
+    plugins: [targetLabelPlugin]
+  });
+}
+
+// Practice timeline toggle
+document.querySelectorAll('#practice-timeline .tl-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#practice-timeline .tl-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    practiceRange = btn.dataset.range === 'all' ? 'all' : parseInt(btn.dataset.range);
+    if (practiceChart) { practiceChart.destroy(); practiceChart = null; }
+    renderPracticeChart();
+  });
+});
+
+// ===================== WEEKLY ERG GOAL =====================
+
+document.getElementById('goal-weekly-erg-cancel').addEventListener('click', () => {
+  document.getElementById('goal-weekly-erg-modal').classList.remove('active');
+});
+
+document.getElementById('goal-weekly-erg-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'goal-weekly-erg-modal') e.target.classList.remove('active');
+});
+
+document.getElementById('goal-weekly-erg-save').addEventListener('click', () => {
+  const val = Math.round(parseFloat(document.getElementById('goal-weekly-erg-input').value));
+  if (isNaN(val) || val <= 0) return;
+  localStorage.setItem('bulk_goal_weekly_erg', val);
+  document.getElementById('goal-weekly-erg-modal').classList.remove('active');
+  updateHeroStats();
+  if (practiceChart) { practiceChart.destroy(); practiceChart = null; }
+  renderPracticeChart();
+  saveGoalsToServer();
+});
+
+document.getElementById('goal-weekly-erg-clear').addEventListener('click', () => {
+  localStorage.removeItem('bulk_goal_weekly_erg');
+  document.getElementById('goal-weekly-erg-modal').classList.remove('active');
+  updateHeroStats();
+  if (practiceChart) { practiceChart.destroy(); practiceChart = null; }
+  renderPracticeChart();
+  saveGoalsToServer();
+});
+
 // ===================== KEYBOARD =====================
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -1176,6 +1421,7 @@ if (isLoggedIn()) {
   showApp();
   fetchGoals();
   fetchWeights();
+  fetchPractice();
   fetchErgTimes();
 } else {
   showLogin();

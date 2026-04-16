@@ -32,10 +32,22 @@ async function initDB() {
     )
   `);
 
+  // Erg practice table (multiple entries per day allowed)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS ergpractice (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      date TEXT NOT NULL,
+      minutes REAL NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+
   // Migration: add goal columns if missing
   try {
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS goal_weight REAL`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS goal_2k REAL`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS goal_weekly_erg REAL`);
   } catch (e) { /* ignore */ }
 
   // Weights table (with user_id)
@@ -159,16 +171,16 @@ app.get('/api/auth/me', requireAuth, async (req, res) => {
 
 // ---- Goals API ----
 app.get('/api/goals', requireAuth, async (req, res) => {
-  const { rows } = await pool.query('SELECT goal_weight, goal_2k FROM users WHERE id = $1', [req.userId]);
+  const { rows } = await pool.query('SELECT goal_weight, goal_2k, goal_weekly_erg FROM users WHERE id = $1', [req.userId]);
   if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
   res.json(rows[0]);
 });
 
 app.put('/api/goals', requireAuth, async (req, res) => {
-  const { goal_weight, goal_2k } = req.body;
+  const { goal_weight, goal_2k, goal_weekly_erg } = req.body;
   await pool.query(
-    'UPDATE users SET goal_weight = $1, goal_2k = $2 WHERE id = $3',
-    [goal_weight ?? null, goal_2k ?? null, req.userId]
+    'UPDATE users SET goal_weight = $1, goal_2k = $2, goal_weekly_erg = $3 WHERE id = $4',
+    [goal_weight ?? null, goal_2k ?? null, goal_weekly_erg ?? null, req.userId]
   );
   res.json({ success: true });
 });
@@ -245,6 +257,32 @@ app.put('/api/ergtimes/:id', requireAuth, async (req, res) => {
 app.delete('/api/ergtimes/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   const { rowCount } = await pool.query('DELETE FROM ergtimes WHERE id = $1 AND user_id = $2', [id, req.userId]);
+  if (rowCount === 0) return res.status(404).json({ error: 'Entry not found' });
+  res.json({ success: true });
+});
+
+// ---- Erg Practice API ----
+
+app.get('/api/ergpractice', requireAuth, async (req, res) => {
+  const { rows } = await pool.query('SELECT * FROM ergpractice WHERE user_id = $1 ORDER BY date ASC, created_at ASC', [req.userId]);
+  res.json(rows);
+});
+
+app.post('/api/ergpractice', requireAuth, async (req, res) => {
+  const { date, minutes } = req.body;
+  if (!date || minutes == null) return res.status(400).json({ error: 'Date and minutes are required' });
+  const m = parseFloat(minutes);
+  if (isNaN(m) || m <= 0 || m > 1440) return res.status(400).json({ error: 'Minutes must be between 0 and 1440' });
+  const { rows } = await pool.query(
+    'INSERT INTO ergpractice (user_id, date, minutes) VALUES ($1, $2, $3) RETURNING *',
+    [req.userId, date, m]
+  );
+  res.json(rows[0]);
+});
+
+app.delete('/api/ergpractice/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+  const { rowCount } = await pool.query('DELETE FROM ergpractice WHERE id = $1 AND user_id = $2', [id, req.userId]);
   if (rowCount === 0) return res.status(404).json({ error: 'Entry not found' });
   res.json({ success: true });
 });
