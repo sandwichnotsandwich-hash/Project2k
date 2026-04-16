@@ -1239,6 +1239,24 @@ function getPracticeDailyTotals() {
   return Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
 }
 
+function getPracticeWeeklyCumulative() {
+  // Per-day totals, but each point is cumulative minutes for its Mon–Sun week up to that day.
+  const daily = getPracticeDailyTotals();
+  let curMonday = null;
+  let running = 0;
+  return daily.map(d => {
+    const date = new Date(d.date + 'T00:00:00');
+    const day = date.getDay();
+    const mondayOffset = day === 0 ? 6 : day - 1;
+    const monday = new Date(date);
+    monday.setDate(date.getDate() - mondayOffset);
+    const mondayStr = `${monday.getFullYear()}-${String(monday.getMonth()+1).padStart(2,'0')}-${String(monday.getDate()).padStart(2,'0')}`;
+    if (mondayStr !== curMonday) { curMonday = mondayStr; running = 0; }
+    running += d.total;
+    return { date: d.date, total: running };
+  });
+}
+
 function renderPracticeTable() {
   const daily = getPracticeDailyTotals();
   if (!daily.length) { practiceTableEmpty.style.display = 'block'; practiceTableBody.innerHTML = ''; return; }
@@ -1259,7 +1277,7 @@ window.deletePracticeDay = async function(date) {
 };
 
 function renderPracticeChart() {
-  const daily = getPracticeDailyTotals();
+  const daily = getPracticeWeeklyCumulative();
   if (!daily.length) {
     practiceChartEmpty.style.display = 'block';
     if (practiceChart) { practiceChart.destroy(); practiceChart = null; }
@@ -1306,13 +1324,13 @@ function renderPracticeChart() {
     }
   }];
 
-  // Target weekly line (show as daily average = weekly target / 7)
+  // Target weekly line: full weekly goal (each point is week-to-date cumulative)
   const goalWeeklyErg = localStorage.getItem('bulk_goal_weekly_erg');
   if (goalWeeklyErg) {
-    const dailyTarget = parseFloat(goalWeeklyErg) / 7;
+    const weeklyTarget = parseFloat(goalWeeklyErg);
     datasets.push({
       label: 'Target',
-      data: labels.map(() => +dailyTarget.toFixed(0)),
+      data: labels.map(() => +weeklyTarget.toFixed(0)),
       borderColor: 'rgba(255, 159, 10, 0.8)',
       borderWidth: 1.5,
       borderDash: [6, 4],
