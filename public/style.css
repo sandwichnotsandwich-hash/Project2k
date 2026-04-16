@@ -182,13 +182,18 @@ body {
 
 .hero-stats-row {
   display: flex;
-  justify-content: center;
-  gap: 12px;
+  justify-content: space-between;
   align-items: stretch;
 }
 
 .hero-stats-row + .hero-stats-row {
   margin-top: 8px;
+}
+
+.hero-stats-row .hero-stat,
+.hero-stats-row .hero-stat-goal {
+  flex: 1;
+  text-align: center;
 }
 
 .hero-stat {
