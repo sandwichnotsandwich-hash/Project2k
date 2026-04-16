@@ -353,14 +353,14 @@ const targetLabelPlugin = {
     const yScale = chart.scales.y;
     if (!yScale) return;
     const y = yScale.getPixelForValue(targetValue);
-    const xRight = chart.chartArea.right;
+    const xLeft = chart.chartArea.left;
     const ctx = chart.ctx;
     ctx.save();
     ctx.fillStyle = '#FF9F0A';
     ctx.font = '600 10px -apple-system, Helvetica Neue, sans-serif';
-    ctx.textAlign = 'right';
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
-    ctx.fillText('TARGET', xRight - 4, y - 4);
+    ctx.fillText('TARGET', xLeft + 4, y - 4);
     ctx.restore();
   }
 };
