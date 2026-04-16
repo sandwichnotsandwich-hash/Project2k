@@ -458,7 +458,7 @@ body {
 
 .wkg-badge {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
   gap: 1px;
   background: rgba(255, 159, 10, 0.12);
@@ -550,7 +550,7 @@ body {
 
 .goal-badge {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
   gap: 1px;
   background: rgba(10, 132, 255, 0.12);
