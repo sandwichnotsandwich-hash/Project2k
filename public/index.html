@@ -426,6 +426,30 @@
     </div>
   </div>
 
+  <!-- First-time Welcome Modal -->
+  <div class="modal-overlay" id="welcome-modal">
+    <div class="modal">
+      <h3 class="welcome-title">Welcome to PROJECT<span class="title-2k">2K</span></h3>
+      <p class="welcome-subtitle">Set your goals and let's go!</p>
+      <div class="form-group">
+        <label for="welcome-weight-input">Weight Goal (lbs)</label>
+        <input type="number" id="welcome-weight-input" step="1" min="50" max="500" placeholder="195" inputmode="numeric">
+      </div>
+      <div class="form-group">
+        <label for="welcome-weekly-input">Weekly Steady State Target (mins)</label>
+        <input type="number" id="welcome-weekly-input" step="1" min="1" max="5000" placeholder="300" inputmode="numeric">
+      </div>
+      <div class="form-group">
+        <label for="welcome-2k-input">2K Goal (M:SS)</label>
+        <input type="text" id="welcome-2k-input" placeholder="6:30" inputmode="numeric" maxlength="4">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="welcome-skip">Skip</button>
+        <button type="button" class="btn-primary" id="welcome-save">Save</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Goal Modal -->
   <div class="modal-overlay" id="goal-modal">
     <div class="modal">

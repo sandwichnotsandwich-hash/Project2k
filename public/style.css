@@ -1085,6 +1085,19 @@ tbody td:last-child {
   margin-bottom: 20px;
 }
 
+.welcome-title {
+  font-size: 1.5rem !important;
+  text-align: center;
+  margin-bottom: 4px !important;
+}
+
+.welcome-subtitle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
 .edit-date {
   font-size: 1rem;
   font-weight: 500;

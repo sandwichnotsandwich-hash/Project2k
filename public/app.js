@@ -398,8 +398,67 @@ async function fetchGoals() {
     if (typeof weightChart !== 'undefined' && weightChart) { weightChart.destroy(); weightChart = null; renderWeightChart(); }
     if (typeof ergChart !== 'undefined' && ergChart) { ergChart.destroy(); ergChart = null; renderErgChart(); }
     if (typeof practiceChart !== 'undefined' && practiceChart) { practiceChart.destroy(); practiceChart = null; renderPracticeChart(); }
+    maybeShowWelcome();
   } catch (err) { console.error('Failed to fetch goals:', err); }
 }
+
+// ===================== FIRST-TIME WELCOME MODAL =====================
+function maybeShowWelcome() {
+  if (localStorage.getItem('bulk_welcome_dismissed')) return;
+  const hasAnyGoal = localStorage.getItem('bulk_goal_weight') ||
+                     localStorage.getItem('bulk_goal_weekly_erg') ||
+                     localStorage.getItem('bulk_goal_2k');
+  if (hasAnyGoal) {
+    // Returning user with goals already set — don't prompt again
+    localStorage.setItem('bulk_welcome_dismissed', '1');
+    return;
+  }
+  document.getElementById('welcome-modal').classList.add('active');
+}
+
+document.getElementById('welcome-skip').addEventListener('click', () => {
+  localStorage.setItem('bulk_welcome_dismissed', '1');
+  document.getElementById('welcome-modal').classList.remove('active');
+});
+
+document.getElementById('welcome-save').addEventListener('click', () => {
+  const wInput = document.getElementById('welcome-weight-input').value.trim();
+  const wklyInput = document.getElementById('welcome-weekly-input').value.trim();
+  let twokInput = document.getElementById('welcome-2k-input').value.trim();
+
+  let anySaved = false;
+
+  if (wInput) {
+    const w = parseFloat(wInput);
+    if (!isNaN(w) && w > 0) { localStorage.setItem('bulk_goal_weight', w); anySaved = true; }
+  }
+  if (wklyInput) {
+    const m = parseFloat(wklyInput);
+    if (!isNaN(m) && m > 0) { localStorage.setItem('bulk_goal_weekly_erg', Math.round(m)); anySaved = true; }
+  }
+  if (twokInput) {
+    if (!twokInput.includes(':')) {
+      const digits = twokInput.replace(/[^0-9]/g, '');
+      if (digits) twokInput = formatGoalDigits(digits);
+    }
+    const sec = parseTime(twokInput);
+    if (!isNaN(sec) && sec > 0) { localStorage.setItem('bulk_goal_2k', sec); anySaved = true; }
+  }
+
+  localStorage.setItem('bulk_welcome_dismissed', '1');
+  document.getElementById('welcome-modal').classList.remove('active');
+
+  if (anySaved) {
+    updateHeroStats();
+    if (typeof weightChart !== 'undefined' && weightChart) { weightChart.destroy(); weightChart = null; renderWeightChart(); }
+    if (typeof ergChart !== 'undefined' && ergChart) { ergChart.destroy(); ergChart = null; renderErgChart(); }
+    if (typeof practiceChart !== 'undefined' && practiceChart) { practiceChart.destroy(); practiceChart = null; renderPracticeChart(); }
+    saveGoalsToServer();
+  }
+});
+
+// Tap-outside-to-close is intentionally NOT wired: first-time users should
+// explicitly choose Save or Skip so the flag gets set.
 
 async function saveGoalsToServer() {
   const gw = localStorage.getItem('bulk_goal_weight');
