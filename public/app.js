@@ -232,7 +232,7 @@ function updateHeroStats() {
   statsEl.innerHTML = `
     <div class="hero-stats-row">
       <div class="hero-stat"><span class="hero-stat-value">${currentW}</span><span class="hero-stat-label">Current lbs</span></div>
-      <div class="hero-stat"><span class="hero-stat-value">${weekDisplay}</span><span class="hero-stat-label">Mins This Week</span></div>
+      <div class="hero-stat"><span class="hero-stat-value">${weekDisplay}</span><span class="hero-stat-label">Weekly Mins</span></div>
       <div class="hero-stat"><span class="hero-stat-value">${best2k}</span><span class="hero-stat-label">2K PR</span></div>
     </div>
   `;
