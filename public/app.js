@@ -5,8 +5,34 @@ const AUTH_USER_KEY = 'project2k_user';
 
 function getToken() { return localStorage.getItem(AUTH_TOKEN_KEY); }
 function getUser() { const u = localStorage.getItem(AUTH_USER_KEY); return u ? JSON.parse(u) : null; }
-function setAuth(token, user) { localStorage.setItem(AUTH_TOKEN_KEY, token); localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user)); }
-function clearAuth() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); }
+
+// Keys that hold per-user data. Clear these when the signed-in user changes
+// (sign-out, or a different account signing in on the same browser) so one
+// user's goals / welcome-dismissed flag don't leak into another account.
+const USER_SCOPED_KEYS = [
+  'bulk_goal_weight',
+  'bulk_goal_2k',
+  'bulk_goal_weekly_erg',
+  'bulk_welcome_dismissed'
+];
+function clearUserScopedData() {
+  USER_SCOPED_KEYS.forEach(k => localStorage.removeItem(k));
+}
+
+function setAuth(token, user) {
+  const prev = getUser();
+  if (prev && user && prev.id !== user.id) {
+    // Different account signing in — wipe previous user's per-user data
+    clearUserScopedData();
+  }
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+}
+function clearAuth() {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  clearUserScopedData();
+}
 function isLoggedIn() { return !!getToken(); }
 
 async function authFetch(url, options = {}) {
@@ -381,19 +407,14 @@ async function fetchGoals() {
   try {
     const res = await authFetch('/api/goals');
     const { goal_weight, goal_2k, goal_weekly_erg } = await res.json();
-    const localW = localStorage.getItem('bulk_goal_weight');
-    const localE = localStorage.getItem('bulk_goal_2k');
-    const localP = localStorage.getItem('bulk_goal_weekly_erg');
-    if (goal_weight == null && goal_2k == null && goal_weekly_erg == null && (localW || localE || localP)) {
-      await saveGoalsToServer();
-    } else {
-      if (goal_weight != null) localStorage.setItem('bulk_goal_weight', goal_weight);
-      else localStorage.removeItem('bulk_goal_weight');
-      if (goal_2k != null) localStorage.setItem('bulk_goal_2k', goal_2k);
-      else localStorage.removeItem('bulk_goal_2k');
-      if (goal_weekly_erg != null) localStorage.setItem('bulk_goal_weekly_erg', goal_weekly_erg);
-      else localStorage.removeItem('bulk_goal_weekly_erg');
-    }
+    // Server is the source of truth — mirror whatever it returns into
+    // localStorage, clearing stale values from other accounts.
+    if (goal_weight != null) localStorage.setItem('bulk_goal_weight', goal_weight);
+    else localStorage.removeItem('bulk_goal_weight');
+    if (goal_2k != null) localStorage.setItem('bulk_goal_2k', goal_2k);
+    else localStorage.removeItem('bulk_goal_2k');
+    if (goal_weekly_erg != null) localStorage.setItem('bulk_goal_weekly_erg', goal_weekly_erg);
+    else localStorage.removeItem('bulk_goal_weekly_erg');
     updateHeroStats();
     if (typeof weightChart !== 'undefined' && weightChart) { weightChart.destroy(); weightChart = null; renderWeightChart(); }
     if (typeof ergChart !== 'undefined' && ergChart) { ergChart.destroy(); ergChart = null; renderErgChart(); }
