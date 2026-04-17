@@ -1267,7 +1267,7 @@ footer {
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 640px) {
   .hero {
-    padding: 0 16px 16px;
+    padding: 0 16px 4px;
   }
 
   .hero-title {
@@ -1287,7 +1287,7 @@ footer {
   }
 
   .tab-nav {
-    padding: 6px 16px;
+    padding: 4px 16px;
   }
 
   .container {
