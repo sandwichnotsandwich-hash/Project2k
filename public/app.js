@@ -1223,29 +1223,32 @@ function formatGoalDigits(d) {
   return d[0] + ':' + d.slice(1, 3);
 }
 
-const goal2kInput = document.getElementById('goal-2k-input');
-goal2kInput.addEventListener('keydown', function(e) {
-  if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-    if (e.key === 'Backspace') {
-      e.preventDefault();
-      const digits = this.value.replace(/[^0-9]/g, '');
-      this.value = formatGoalDigits(digits.slice(0, -1));
+function attachMSSFormatter(input) {
+  input.addEventListener('keydown', function(e) {
+    if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        const digits = this.value.replace(/[^0-9]/g, '');
+        this.value = formatGoalDigits(digits.slice(0, -1));
+      }
+      return;
     }
-    return;
-  }
-  if (!/^\d$/.test(e.key)) { e.preventDefault(); return; }
-  e.preventDefault();
-  const digits = this.value.replace(/[^0-9]/g, '');
-  if (digits.length >= 3) return;
-  this.value = formatGoalDigits(digits + e.key);
-});
+    if (!/^\d$/.test(e.key)) { e.preventDefault(); return; }
+    e.preventDefault();
+    const digits = this.value.replace(/[^0-9]/g, '');
+    if (digits.length >= 3) return;
+    this.value = formatGoalDigits(digits + e.key);
+  });
+  input.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const digits = pasted.replace(/[^0-9]/g, '').slice(0, 3);
+    this.value = formatGoalDigits(digits);
+  });
+}
 
-goal2kInput.addEventListener('paste', function(e) {
-  e.preventDefault();
-  const pasted = (e.clipboardData || window.clipboardData).getData('text');
-  const digits = pasted.replace(/[^0-9]/g, '').slice(0, 3);
-  this.value = formatGoalDigits(digits);
-});
+attachMSSFormatter(document.getElementById('goal-2k-input'));
+attachMSSFormatter(document.getElementById('welcome-2k-input'));
 
 document.getElementById('goal-2k-cancel').addEventListener('click', () => {
   document.getElementById('goal-2k-modal').classList.remove('active');
