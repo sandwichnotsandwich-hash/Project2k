@@ -8,12 +8,13 @@ function getUser() { const u = localStorage.getItem(AUTH_USER_KEY); return u ? J
 
 // Keys that hold per-user data. Clear these when the signed-in user changes
 // (sign-out, or a different account signing in on the same browser) so one
-// user's goals / welcome-dismissed flag don't leak into another account.
+// user's goals don't leak into another account. Welcome dismissal state
+// lives on the server (users.welcome_dismissed) so it can't leak here.
 const USER_SCOPED_KEYS = [
   'bulk_goal_weight',
   'bulk_goal_2k',
   'bulk_goal_weekly_erg',
-  'bulk_welcome_dismissed'
+  'bulk_welcome_dismissed'  // legacy localStorage flag — still cleared for safety
 ];
 function clearUserScopedData() {
   USER_SCOPED_KEYS.forEach(k => localStorage.removeItem(k));
@@ -403,10 +404,13 @@ const targetLabelPlugin = {
   }
 };
 
+// Server-reported welcome_dismissed flag for the current user.
+let welcomeDismissedOnServer = false;
+
 async function fetchGoals() {
   try {
     const res = await authFetch('/api/goals');
-    const { goal_weight, goal_2k, goal_weekly_erg } = await res.json();
+    const { goal_weight, goal_2k, goal_weekly_erg, welcome_dismissed } = await res.json();
     // Server is the source of truth — mirror whatever it returns into
     // localStorage, clearing stale values from other accounts.
     if (goal_weight != null) localStorage.setItem('bulk_goal_weight', goal_weight);
@@ -415,6 +419,7 @@ async function fetchGoals() {
     else localStorage.removeItem('bulk_goal_2k');
     if (goal_weekly_erg != null) localStorage.setItem('bulk_goal_weekly_erg', goal_weekly_erg);
     else localStorage.removeItem('bulk_goal_weekly_erg');
+    welcomeDismissedOnServer = !!welcome_dismissed;
     updateHeroStats();
     if (typeof weightChart !== 'undefined' && weightChart) { weightChart.destroy(); weightChart = null; renderWeightChart(); }
     if (typeof ergChart !== 'undefined' && ergChart) { ergChart.destroy(); ergChart = null; renderErgChart(); }
@@ -424,22 +429,24 @@ async function fetchGoals() {
 }
 
 // ===================== FIRST-TIME WELCOME MODAL =====================
-function maybeShowWelcome() {
-  if (localStorage.getItem('bulk_welcome_dismissed')) return;
-  const hasAnyGoal = localStorage.getItem('bulk_goal_weight') ||
-                     localStorage.getItem('bulk_goal_weekly_erg') ||
-                     localStorage.getItem('bulk_goal_2k');
-  if (hasAnyGoal) {
-    // Returning user with goals already set — don't prompt again
-    localStorage.setItem('bulk_welcome_dismissed', '1');
-    return;
+async function dismissWelcomeOnServer() {
+  welcomeDismissedOnServer = true;
+  try {
+    await authFetch('/api/welcome/dismiss', { method: 'POST' });
+  } catch (err) {
+    console.error('Failed to dismiss welcome:', err);
   }
+}
+
+function maybeShowWelcome() {
+  // Server-reported flag is authoritative — can't be leaked between accounts.
+  if (welcomeDismissedOnServer) return;
   document.getElementById('welcome-modal').classList.add('active');
 }
 
 document.getElementById('welcome-skip').addEventListener('click', () => {
-  localStorage.setItem('bulk_welcome_dismissed', '1');
   document.getElementById('welcome-modal').classList.remove('active');
+  dismissWelcomeOnServer();
 });
 
 document.getElementById('welcome-save').addEventListener('click', () => {
@@ -466,8 +473,8 @@ document.getElementById('welcome-save').addEventListener('click', () => {
     if (!isNaN(sec) && sec > 0) { localStorage.setItem('bulk_goal_2k', sec); anySaved = true; }
   }
 
-  localStorage.setItem('bulk_welcome_dismissed', '1');
   document.getElementById('welcome-modal').classList.remove('active');
+  dismissWelcomeOnServer();
 
   if (anySaved) {
     updateHeroStats();
@@ -479,7 +486,7 @@ document.getElementById('welcome-save').addEventListener('click', () => {
 });
 
 // Tap-outside-to-close is intentionally NOT wired: first-time users should
-// explicitly choose Save or Skip so the flag gets set.
+// explicitly choose Save or Skip so the server flag gets set.
 
 async function saveGoalsToServer() {
   const gw = localStorage.getItem('bulk_goal_weight');
