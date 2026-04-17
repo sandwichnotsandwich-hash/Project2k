@@ -567,7 +567,7 @@ body {
 .goal-badge:active { transform: scale(0.97); }
 
 .goal-badge-label {
-  font-size: 0.5rem;
+  font-size: 0.625rem;
   font-weight: 700;
   color: #0A84FF;
   text-transform: uppercase;
@@ -576,7 +576,7 @@ body {
 
 .goal-badge-value {
   font-family: var(--font-rounded);
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: #0A84FF;
   line-height: 1;
