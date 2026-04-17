@@ -553,23 +553,23 @@ body {
   flex-direction: column-reverse;
   align-items: center;
   gap: 1px;
-  background: rgba(10, 132, 255, 0.12);
+  background: #0A84FF;
   border: none;
   border-radius: 8px;
   padding: 4px 10px;
   cursor: pointer;
   font-family: var(--font);
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.2s;
+  transition: background 0.2s, opacity 0.2s;
 }
 
-.goal-badge:hover { background: rgba(10, 132, 255, 0.2); }
+.goal-badge:hover { opacity: 0.85; }
 .goal-badge:active { transform: scale(0.97); }
 
 .goal-badge-label {
   font-size: 0.625rem;
   font-weight: 700;
-  color: #0A84FF;
+  color: #FFFFFF;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -578,16 +578,13 @@ body {
   font-family: var(--font-rounded);
   font-size: 1.125rem;
   font-weight: 700;
-  color: #0A84FF;
+  color: #FFFFFF;
   line-height: 1;
 }
 
-.goal-badge.goal-reached { background: rgba(48, 209, 88, 0.12); }
-.goal-badge.goal-reached:hover { background: rgba(48, 209, 88, 0.2); }
-.goal-badge.goal-reached .goal-badge-label,
-.goal-badge.goal-reached .goal-badge-value { color: #30D158; }
+.goal-badge.goal-reached { background: #30D158; }
 
-.goal-badge .goal-unset { color: #FF375F; }
+.goal-badge .goal-unset { color: #FFFFFF; }
 
 .card-badge {
   font-size: 0.6875rem;
