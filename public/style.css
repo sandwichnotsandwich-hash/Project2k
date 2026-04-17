@@ -1276,6 +1276,7 @@ footer {
 
   .hero-stats {
     gap: 16px;
+    margin-top: 8px;
   }
 
   .hero-stat-value {

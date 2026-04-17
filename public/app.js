@@ -1422,7 +1422,7 @@ function updateHeaderLayout() {
   if (!fixedHeader) return;
   const headerH = fixedHeader.offsetHeight;
   document.querySelectorAll('.container').forEach(c => {
-    c.style.paddingTop = (headerH + 12) + 'px';
+    c.style.paddingTop = (headerH + 8) + 'px';
   });
 }
 
