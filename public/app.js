@@ -818,7 +818,7 @@ inputUnitBtns.forEach(btn => {
       ergTimeInput.setAttribute('maxlength', '6');
       ergTimeInput.inputMode = 'numeric';
     } else {
-      label.textContent = '2K Time (M:SS.s)';
+      label.textContent = 'Final Time';
       ergTimeInput.placeholder = 'MM:SS.S';
       ergTimeInput.setAttribute('maxlength', '6');
       ergTimeInput.inputMode = 'numeric';
