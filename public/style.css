@@ -724,6 +724,19 @@ body {
   margin-top: 16px;
 }
 
+/* Hide up/down spinner arrows on welcome modal number inputs */
+#welcome-weight-input::-webkit-inner-spin-button,
+#welcome-weight-input::-webkit-outer-spin-button,
+#welcome-weekly-input::-webkit-inner-spin-button,
+#welcome-weekly-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#welcome-weight-input,
+#welcome-weekly-input {
+  -moz-appearance: textfield;
+}
+
 .form-group label {
   font-size: 0.75rem;
   font-weight: 500;
