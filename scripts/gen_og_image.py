@@ -11,10 +11,9 @@ GREY = (160, 160, 168, 255)
 TITLE = "PROJECT2K"
 TAGLINE = "Dial in your stats. Crush your PR."
 
-# -apple-system on Apple devices resolves to SF Pro (NOT SF Pro Rounded),
-# so the website's .hero-title / .login-title renders in SF Pro Bold.
-# Match that here with SFNS.ttf (Bold variation).
-FONT_TITLE = "/System/Library/Fonts/SFNS.ttf"
+# Match the website title font: SF Pro Rounded Bold (the CSS stack's
+# 'SF Pro Rounded' fallback is what the browser actually renders).
+FONT_TITLE = "/System/Library/Fonts/SFNSRounded.ttf"
 FONT_UI = "/System/Library/Fonts/SFNS.ttf"
 
 title_font = ImageFont.truetype(FONT_TITLE, 180)
